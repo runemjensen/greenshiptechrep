@@ -123,6 +123,42 @@ We notice that the inequalities that should be checked for redundancy is a subse
 \end{algorithmic}		
 \end{algorithm}
 %
+\subsection{Projection Framework}
+We use \Call{Solve}{} from Algorithm~\ref{alg:solve} to find the projection of $S$ w.r.t. $Y\subseteq \VAR(S)$. The method \Call{Project}{} is presented below in Algorithm~\ref{alg:project}. It consists of steps of preprocessing the system, doing Gauss-elimination and doing FM-elimination on the system. After each FM-elimination of a variable some (timewise) ``cheap'' preprocessing steps are done, and we also make sure to remove linearly dependent (in)equalities as well. 
+Hence \Call{CleanUp}{} consists of %the (timewise) ``cheap'' preprocessing steps plus \Call{RemoveQuasiIneqs}{}, i.e. 
+Algorithm~\ref{alg:prep} minus the calls to \Call{ForcedByBounds}{} and \Call{RemoveLessStrictIneqs}{}.
+The reason we do not simply use \Call{Preprocess}{} is that the two above mentioned subprocedures in experience 
+are more time consuming than the others and prior results showed a too little effect compared to the time taken.
+
+After this, we remove redundant inequalities (we check only the newly added inequalities) using \Call{RemoveRedundancy}{} from Algorithm~\ref{alg:manager}. 
+In \Call{RemoveRedundancy}{}, each step of doing parallel or sequential redundancy checks, respectively, are potentially repeated a number of times (or until the system does not change) depending on the values in the considered model, since ``off''-numbers (according to experience) are more likely to cause bad $\kappa$-values. If there are many inequalities resulting in bad $\kappa$-values, we would then like to test them again (after other redundant inequalities have been removed), since the removal of other inequalities can lead to a better $\kappa$-value when the inequality is re-evaluated.    
+Due to the sometimes large number of inequalities that we do not know the redundancy staus of (because of a bad $\kappa$-value, that do not change during the repeated checks for redundancy), in some runs of the method we also start the FM-elimination-step in \Call{Project}{} with a full sequential redundancy check.
+
+\begin{algorithm}\caption{Overview of the method for projecting the variables $Y$ from an (in)equality system  $S$.}\label{alg:project}
+\begin{algorithmic}[1]
+\Function{Project}{S,Y}
+	\State $S'\gets S$
+	\State $S'\gets\Call{Preprocess}{S',Y}$\Comment See Algorithm~\ref{alg:prep}
+	\State $S'\gets\Call{Gauss-Elim}{S',Y}$\Comment See Algorithm~\ref{alg:Gauss} 
+	\State $S'\gets \Call{FM-Elim*}{S',Y}$\Comment FM-elimination with redundancy removal (see below)
+\EndFunction
+\State
+\Function{FM-Elim*}{$S,Y$}
+	\State  $S'\gets S$, $Y'\gets Y$
+	\While{ $Y'\neq \emptyset$ }
+		\State $x\gets$ \Call{ChooseVariableToDelete}{$Y'$, $S'$}
+		\State $S''\gets(\mi{Zero}_{S'}(x))_{\VAR(S')\setminus\{x\}}$
+		\State $S' \gets$ \Call{FM-ElimVar}{$S'$, $x$} \Comment Algorithm~\ref{alg:FMBasic}
+		\State Remove $x$ from $Y'$
+		\State $S'\gets\Call{CleanUP}{S',Y}$
+	%	\State $S'\gets \Call{RemoveQuasiIneqs}{S',Y}$
+		\State $S'\gets \Call{RemoveRedundancy}{S', S'\setminus S'', \text{available threads}}$ 	\Comment Algorithm~\ref{alg:manager}\label{ln:projx}
+	\EndWhile
+	\State \Return $S'$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+%
 \subsection{Decomposition}\label{sec:decomp}
 Given the theoretical complexity of the Fourier\--Motzkin\--elimination procedure, we might not have great hope of using this to eliminate a large number of variables from a very big (in)equality system, at least not if the values of the (in)equalities are randomly generated.
 %However, we are looking to take advantage of the build-in structure of our problem.

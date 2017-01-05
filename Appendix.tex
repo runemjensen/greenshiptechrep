@@ -1,0 +1,439 @@
+\section*{Appendix}
+\projection*
+\begin{proof}
+We start by showing item \ref{lm:1.1}. Thus assume that $\var(S_1)\cap\var(S_2) = \emptyset$. Order the variables such that $x\prec y$ for all $x\in X\setminus Y$ and $y\in Y$.
+
+First assume that $\ve{r}\in \proj_Y\big(\feas(S_1\cup S_2)\big)$. Then there exists values for the variables in $Y$, $\ve{r}_Y$, such that $(\ve{r},\ve{r}_Y)\in\feas(S_1\cup S_2)$, i.e. for all $c\in S_1\cup S_2$ it holds that $(\ve{r},\ve{r}_Y)\in\feas(c)$. Hence $(\ve{r},\ve{r}_Y)\in\feas(S_1)$ and $(\ve{r},\ve{r}_Y)\in\feas(S_2)$, so $\ve{r}\in \proj_Y(\feas(S_1))$ and $\ve{r}\in \proj_Y(\feas(S_2))$. That is, $\ve{r}\in\proj_Y\big(\feas(S_1)\big)\cap \proj_Y\big(\feas(S_2)\big)$.
+
+On the other hand, let $Y_1 = Y\cap \var(S_1)$, $Y_2 = Y\cap \var(S_2)$ and $Y_3 = Y\setminus (Y_1 \cup Y_2)$, so that $Y = Y_1\dot\cup Y_2 \dot\cup Y_3$. Order the variables such that %``$\xx\setminus Y \prec Y_1 \prec Y_2 \prec Y_3$''. 
+$x\prec y_1$, $y_1\prec y_2$ and $y_2\prec y_3$ for all $x\in \xx\setminus Y$, $y_1\in Y_1$, $y_2\in Y_2$ and $y_3\in Y_3$. 
+Assume that $\ve{r}\in\proj_Y\big(\feas(S_1)\big)\cap \proj_Y\big(\feas(S_2)\big)$. Then $\ve{r}\in\proj_Y(\feas(S_1))$ and $\ve{r}\in\proj_Y(\feas(S_2))$.  
+Hence there exists values $\ve{u}_1$ and $\ve{v}_1$ for the variables in $Y_1$, values $\ve{u}_2$ and $\ve{v}_2$ for the variables in $Y_2$, and values $\ve{u}_3$ and $\ve{v}_3$ for the variables in $Y_3$ such that $\vea(c)\cdot (\ve{r}, \ve{u}_1, \ve{u}_2, \ve{u}_3)\odot_c \rhs(c)$ for all $c\in S_1$, and $\vea(c')\cdot (\ve{r}, \ve{v}_1, \ve{v}_2, \ve{v}_3)\odot_{c'} \rhs(c')$ for all $c'\in S_2$. 
+
+Now consider the vector $(\ve{r}, \ve{u}_1, \ve{v}_2, \ve{0})$. Since $\coef(x,c)=0$ for all $x\in Y_2\cup Y_3$ and $c\in S_1$, we have that 
+\begin{align*}
+\vea(c)\cdot (\ve{r}, \ve{u}_1, \ve{v}_2, \ve{0}) 
+&= \vea(c_{X\setminus Y})\cdot \ve{r} + \vea(c_{Y_1})\cdot \ve{u}_1 + \vea(c_{Y_2})\cdot \ve{v}_2 + \vea(c_{Y_3})\cdot\ve{0}\\ 
+&= \vea(c_{X\setminus Y})\cdot \ve{r} + \vea(c_{Y_1})\cdot \ve{u}_1 + \ve{0}\cdot \ve{v}_2 + \ve{0}\cdot\ve{0}\\ 
+&= \vea(c_{X\setminus Y})\cdot \ve{r} + \vea(c_{Y_1})\cdot \ve{u}_1 + \vea(c_{Y_2})\cdot \ve{u}_2 + \vea(c_{Y_3})\cdot \ve{u}_3\\
+&= \vea(c)\cdot (\ve{r},\ve{u}_1,\ve{u}_2,\ve{u}_3) \odot_c \rhs(c)
+\end{align*}
+for all $c\in S_1$. Likewise
+\begin{align*}
+\vea(c')\cdot (\ve{r}, \ve{u}_1, \ve{v}_2, \ve{0}) 
+&= \vea(c'_{X\setminus Y})\cdot \ve{r} + \vea(c'_{Y_1})\cdot \ve{u}_1 + \vea(c'_{Y_2})\cdot \ve{v}_2 + \vea(c'_{Y_3})\cdot\ve{0}\\ 
+&= \vea(c'_{X\setminus Y})\cdot \ve{r} + \ve{0}\cdot \ve{u}_1 + \vea(c'_{Y_2})\cdot \ve{v}_2 + \ve{0}\cdot\ve{0}\\ 
+&= \vea(c'_{X\setminus Y})\cdot \ve{r} + \vea(c'_{Y_1})\cdot \ve{v}_1 + \vea(c'_{Y_2})\cdot \ve{v}_2 + \vea(c'_{Y_3})\cdot \ve{v}_3\\
+&= \vea(c')\cdot (\ve{r},\ve{v}_1,\ve{v}_2,\ve{v}_3) \odot_{c'} \rhs(c')
+\end{align*}
+for all $c'\in S_2$.
+That is, there exists an $\ve{r}_Y$, namely $(\ve{u}_1,\ve{v}_2,\ve{0})$, such that $(\ve{r},\ve{r}_Y)\in\feas(S_1 \cup S_2)$, i.e. $\ve{r}\in \proj_Y(\feas(S_1\cup S_2))$.
+
+This shows item \ref{lm:1.1} of the lemma.
+\\\\
+Now we will show item \ref{lm:1.2}. Thus assume that $\var(S_1)\cap Y = \emptyset$. Order the variables such that $x\prec y$ for all $x\in X\setminus Y$ and $y\in Y$.
+
+First assume that $\ve{r}\in \feas\big((S_1)_{X\setminus Y}\big)\cap \proj_Y\big(\feas(S_2)\big)$. Then it holds that $\vea(c)_{X\setminus Y}\cdot\;\ve{r} \odot_c\rhs(c)$ for all $c\in S_1$, and there exists an $\ve{r}_Y$, denoting values for the variables in $Y$, such that $(\vea(c'_{X\setminus Y}),\vea(c'_Y))\cdot(\ve{r},\ve{r}_Y)\odot_{c'}\rhs(c')$ for all $c'\in S_2$.
+Since $\var(S_1)\cap Y = \emptyset$, we have that $\vea(c_Y)=\ve{0}$ for all $c\in S_1$, and hence 
+$\vea(c_{X\setminus Y})\cdot\ve{r} = \vea(c_{X\setminus Y})\cdot\ve{r} + \vea(c_Y)\cdot\ve{r}_Y = (\vea(c_{X\setminus Y}),\vea(c_Y))\cdot(\ve{r},\ve{r}_Y)\odot_{c}\rhs(c)$ for all $c\in S_1$. 
+
+Thus $\ve{r}_Y$ is such that $(\vea(c_{X\setminus Y}),\vea(c_Y))\cdot(\ve{r},\ve{r}_Y)\odot_{c}\rhs(c)$ for all $c\in S_1\cup S_2$, i.e. there exists an $\ve{r}_Y$ such that $(\ve{r},\ve{r}_Y)\in \feas(S_1\cup S_2)$. That is, $\ve{r}\in \proj_Y\big(\feas(S_1\cup S_2)\big)$.
+
+On the other hand, assume that $\ve{r}\in\proj_Y\big(\feas(S_1\cup S_2)\big)$. Then there exists an $\ve{r}_Y$ such that $(\vea(c_{X\setminus Y}),\vea(c_Y))\cdot(\ve{r},\ve{r}_Y)\odot_{c}\rhs(c)$ for all $c\in S_1\cup S_2$, so $\ve{r}\in\proj_Y(\feas(S_2))$. Let $c\in S_1$ be arbitrary. Then $\vea(c_Y)=\ve{0}$ and hence $\vea(c_{X\setminus Y})\cdot\ve{r} = \vea(c_{X\setminus Y})\cdot\ve{r}+\vea(c_Y)\cdot\ve{r}_Y =
+(\vea(c_{X\setminus Y}),\vea(c_Y))\cdot(\ve{r},\ve{r}_Y) \odot_c\rhs(c)$, so $\ve{r}\in \feas(c_{X\setminus Y})$. I.e. $\ve{r}\in \feas\big((S_1)_{X\setminus Y}\big)$. 
+In conclusion we therefore have that $\ve{r}\in \feas\big((S_1)_{X\setminus Y}\big)\cap  \proj_Y(\feas(S_2))$.
+
+Combined, this shows that $\feas\big((S_1)_{X\setminus Y}\big)\cap \proj_Y\big(\feas(S_2)\big)\subseteq \proj_Y\big(\feas(S_1\cup S_2)\big)$ and $\proj_Y\big(\feas(S_1\cup S_2)\big)\subseteq \feas\big((S_1)_{X\setminus Y}\big)\cap \proj_Y\big(\feas(S_2)\big)$, i.e. \ref{lm:1.2} in the lemma holds.
+\\\\
+%
+Finally we will show item \ref{lm:1.3}. Thus assume that $X\subseteq X'$ and $\proj_Y\big(\feas(S)\big)=\feas(E)$.
+We have that $X' = (X'\setminus X)\dot\cup(X\setminus Y)\dot\cup Y$, so order the variables in $\xx$ such that $x'\prec x\prec y$ for all $x'\in X'\setminus X, x\in X\setminus Y$ and $y\in Y$.
+
+First assume that $\ve{r} = (\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y}) \in \feas(E_{X'\setminus Y})$. 
+Hence for all $e\in E_{X'\setminus Y}$ it holds that $\ve{r}\in\feas(e)$.
+Now take arbitrary $e'\in E$. For the extension $e'_{X'\setminus Y}\in E_{X'\setminus Y}$ we have that
+\begin{align*}
+\vea(e'_{X'\setminus Y})\cdot \ve{r} 
+&= \vea(e'_{X'\setminus X})\cdot \ve{r}_{X'\setminus X} + \vea(e'_{X\setminus Y})\cdot \ve{r}_{X\setminus Y}\\
+&= \ve{0}\cdot \ve{r}_{X'\setminus X} + \vea(e'_{X\setminus Y})\cdot \ve{r}_{X\setminus Y}\\
+&=\vea(e')\cdot\ve{r}_{X\setminus Y}.
+\end{align*}
+Since $\ve{r}\in\feas(e'_{X'\setminus Y})$ and $\odot_{e'} =\odot_{e'_{X'\setminus Y}}$, we get that $\vea(e'_{X'\setminus Y})\cdot \ve{r} \odot_{e'} \rhs(e'_{X'\setminus Y}) = \rhs(e')$, so $\vea(e')\cdot\ve{r}_{X\setminus Y}\odot_{e'}\rhs(e')$. 
+Hence $\ve{r}_{X\setminus Y}\in \feas(e')$ for all $e'\in E$, so $\ve{r}_{X\setminus Y}\in \feas(E) = \proj_Y(\feas(S))$ by the assumptions.
+Therefore there exists an $\ve{r}_Y$ such that $(\ve{r}_{X\setminus Y},\ve{r}_Y)\in \feas(S)$.
+
+Now let $c\in S_{X'}$ be arbitrary. Then $c = c'_{X'}$ for a $c'\in S$, and $(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y}, \ve{r}_Y)$ applied to $c$ is therefore
+\begin{align*}
+\vea(c)\cdot (\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y}, \ve{r}_Y)  
+%\vea(c_{X'})\cdot (\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y}, \ve{r}_Y)  
+&= \vea(c_{X'\setminus X})\cdot \ve{r}_{X'\setminus X} + \vea(c_{X\setminus Y})\cdot \ve{r}_{X\setminus Y} + \vea(c_Y)\cdot \ve{r}_Y\\
+&= \ve{0}\cdot \ve{r}_{X'\setminus X} + \vea(c'_{X\setminus Y})\cdot \ve{r}_{X\setminus Y} + \vea(c'_Y)\cdot \ve{r}_Y\\
+&= (\vea(c'_{X\setminus Y}),\vea(c'_Y))\cdot (\ve{r}_{X\setminus Y}, \ve{r}_Y)\\
+&= \vea(c')\cdot (\ve{r}_{X\setminus Y}, \ve{r}_Y)\odot_{c'} \rhs(c')=\rhs(c)
+\end{align*}
+since $(\ve{r}_{X\setminus Y}, \ve{r}_Y)\in \feas(S)$ and $c'\in S$. Since $\odot_{c'}=\odot_c$, we therefore have that 
+$(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y}, \ve{r}_Y)\in \feas(c)$ for all $c\in S_{X'}$, and hence 
+$(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y}, \ve{r}_Y)\in \feas(S_{X'})$, and 
+$(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y})\in \proj_Y(\feas(S_{X'}))$. 
+ 
+On the other hand assume that $\ve{r}=(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y})\in \proj_Y(\feas(S_{X'}))$
+That means that there exists an $\ve{r}_Y$ such that $(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y},\ve{r}_Y)\in \feas(S_{X'})$.
+Now take an arbitrary $c'$ in $S$. Then $(\ve{r}_{X\setminus Y}, \ve{r}_Y)$ applied to $c'$ yields
+\begin{align*}
+\vea(c')\cdot(\ve{r}_{X\setminus Y}, \ve{r}_Y)
+&= \vea(c'_{X\setminus Y})\cdot\ve{r}_{X\setminus Y} + \vea(c'_Y)\cdot \ve{r}_Y\\
+&= \ve{0}\cdot \ve{r}_{X'\setminus X} + \vea(c'_{X\setminus Y})\cdot\ve{r}_{X\setminus Y} + \vea(c'_Y)\cdot \ve{r}_Y\\
+&= \vea(c'_{X'})\cdot(\ve{r}_{X'\setminus X},\ve{r}_{X\setminus Y}, \ve{r}_Y)\odot_{c'}\rhs(c')
+\end{align*}
+since $c'_{X'}\in S_{X'}$, $(\ve{r}_{X'\setminus X},\ve{r}_{X\setminus Y}, \ve{r}_Y)\in\feas(S_{X'})$, $\odot_{c'_{X'}}=\odot_{c'}$, and $\rhs(c'_{X'})=\rhs(c')$. Hence $(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y},\ve{r}_Y)\in \feas(c'_{X'})$. 
+
+Thus, $(\ve{r}_{X\setminus Y}, \ve{r}_Y)\in \feas(c')$ for all $c'\in S$, so $(\ve{r}_{X\setminus Y}, \ve{r}_Y)\in \feas(S)$. Hence $\ve{r}_{X\setminus Y}\in \proj_Y(S)=\feas(E)$.
+
+Now take arbitrary $e\in E_{X'\setminus Y}$, i.e. $e = e'_{X'\setminus Y}$ for an $e'\in E$. Applying    
+$(\ve{r}_{X'\setminus Y}, \ve{r}_{X\setminus Y})$ to $e$ then gives us
+\begin{align*}
+\vea(e)\cdot(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y})
+&=\vea(e'_{X'\setminus Y})\cdot(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y})\\
+&= \vea(e'_{X'\setminus X})\cdot\ve{r}_{X'\setminus X} + \vea(e'_{X\setminus Y})\cdot \ve{r}_{X\setminus Y}\\
+& = \ve{0}\cdot r_{X'\setminus X} + \vea(e'_{X\setminus Y})\cdot\ve{r}_{X\setminus Y}\\
+& = \vea(e')\cdot\ve{r}_{X\setminus Y} \odot_{e} \rhs(e)
+\end{align*}
+since $e'\in E$, $\ve{r}_{X\setminus Y}\in\feas(E)$, $\odot_{e'}=\odot_{e}$, and $\rhs(e')=\rhs(e)$.
+
+Hence $(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y})\in \feas(e)$ for all $e\in E_{X'\setminus Y}$, i.e. $(\ve{r}_{X'\setminus X}, \ve{r}_{X\setminus Y})\in \feas(E_{X'\setminus Y})$.
+
+This shows item~\ref{lm:1.3}.
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lessStrict*
+\begin{proof}
+Assume that $\sigma$ satisfies \eqref{eq:lessStrict}. Then \eqref{eq:lessStrict} implies that  
+$\frac{\coef(x,c)}{\coef(x,c')}\leq \sigma$ for all $x$ such that $\coef(x,c')>0$, and $\sigma \leq \frac{\coef(x,c)}{\coef(x,c')}$ for all $x$ such that $\coef(x,c')<0$. 
+Likewise, $\sigma\leq \frac{\rhs(c)}{\rhs(c')}$ if $\rhs(c')>0$, and $\sigma\geq \frac{\rhs(c)}{\rhs(c')}$ if $\rhs(c')<0$. 
+
+First we consider the case where $\set{x}{\coef(x,c)<0}\neq \emptyset$.
+
+For all $x$ for which $\coef(x,c')<0$ we have that $0\leq \sigma\leq \frac{\coef(x,c)}{\coef(x,c')}$, thus $m\geq 0$. If $\rhs(c')>0$ then $0\leq \sigma\leq \frac{\rhs(c)}{\rhs(c')}$, so $\sigma'\geq 0$ by definition.
+
+Now take an arbitrary $x\in\var(c)\cup\var(c')$. 
+If $\coef(x,c') = 0$ then it follows from \eqref{eq:lessStrict} that $\coef(x,c)\leq 0$, i.e. $\coef(x,c) \leq \sigma'\cdot \coef(x,c')$. 	
+If $\coef(x,c') < 0$ then $\frac{\coef(x,c)}{\coef(x,c')}\geq \sigma'$ by definition of $\sigma'$, so $\coef(x,c)\leq \sigma'\cdot \coef(x,c')$. 
+Finally, if $\coef(x,c') > 0$ then $\frac{\coef(x,c)}{\coef(x,c')}\leq \sigma'$; otherwise $\frac{\coef(x,c)}{\coef(x,c')}> \sigma' = m = \frac{\coef(y,c)}{\coef(y,c')}$ for a $y$ such that $\coef(y,c')<0$, or $\frac{\coef(x,c)}{\coef(x,c')}> \sigma' =\frac{\rhs(c)}{\rhs(c')}$ and $\rhs(c')>0$. But that means that either $\frac{\coef(x,c)}{\coef(x,c')}\leq \sigma\leq \frac{\coef(y,c)}{\coef(y,c')}<\frac{\coef(x,c)}{\coef(x,c')}$, or $\frac{\coef(x,c)}{\coef(x,c')}\leq \sigma\leq \frac{\rhs(c)}{\rhs(c')}<\frac{\coef(x,c)}{\coef(x,c')}$, which are both contradictions. 
+Therefore $\frac{\coef(x,c)}{\coef(x,c')}\leq \sigma'$, and hence $\coef(x,c)\leq \sigma'\cdot \coef(x,c')$.  
+
+If $\rhs(c')=0$ then from \eqref{eq:lessStrict} it follows that $\rhs(c) \geq = 0$, i.e. $\rhs(c)=0 \geq \sigma'\cdot \rhs(c') = 0$.   
+If $\rhs(c')> 0$ then by definition of $\sigma'$, $\sigma'\leq\frac{\rhs(c)}{\rhs(c')}$, so $\sigma'\cdot \rhs(c') \leq \rhs(c)$.
+Finally, if $\rhs(c')< 0$ then we must have that $\frac{\rhs(c)}{\rhs(c')}\leq \sigma'$ and hence $\rhs(c) \geq \sigma'\cdot \rhs(c')$. Otherwise $\frac{\rhs(c)}{\rhs(c')} > \sigma' = \frac{\coef(x,c)}{\coef(x,c')}$ for an $x$ such that $\coef(x,c')<0$. Hence \eqref{eq:lessStrict} implies that $\frac{\rhs(c)}{\rhs(c')} \leq \sigma \leq \frac{\coef(x,c)}{\coef(x, c')} = \sigma' < \frac{\rhs(c)}{\rhs(c')}$, which is a contradiction. 
+\\\\
+We then consider the case where $\coef(x,c)\geq 0$ for all $x\in \var(c')\neq \emptyset$.
+
+By definition $\sigma'\geq 0$.
+
+Take an arbitrary $x\in\var(c)\cup\var(c')$. If $\coef(x,c')=0$ then $\coef(x,c)\leq 0 = \sigma'\cdot \coef(x,c')$.
+If $\coef(x,c')\neq 0$ then $\coef(x,c')>0$. By definition $\sigma'\geq m'$, i.e. $\sigma'\geq \frac{\coef(y,c)}{\coef(y,c')}$ for all $y$ such that $\coef(y,c')>0$. Thus $\sigma\geq \frac{\coef(x,c)}{\coef(x,c')}$, and hence $\coef(x',c) \leq \sigma'\cdot \coef(x,c')$.
+If  $\rhs(c')= 0$, then again $\rhs(c)\geq \sigma\cdot \rhs(c') = 0 = \sigma'\cdot \rhs(c')$. If $\rhs(c')<0$ then by definition $\sigma'\geq \frac{\rhs(c)}{\rhs(c')}$, i.e. $\sigma'\cdot \rhs(c') \leq \rhs(c)$.
+Finally, if $\rhs(c') > 0$, then we must have that $\sigma'\cdot \rhs(c')\leq \rhs(c)$; otherwise $\sigma'\cdot \rhs(c')>\rhs(c)$, i.e. $\frac{\rhs(c)}{\rhs(c')}<\sigma' = \frac{\coef(x,c)}{\coef(x,c')}$ for an $x$ such that $\coef(x,c')>0$, or $\frac{\rhs(c)}{\rhs(c')}<\sigma' = 0$. In the former case we get that $\frac{\coef(x,c)}{\coef(x,c')}\leq \sigma \leq \frac{\rhs(c)}{\rhs(c')} < \sigma' = \frac{\coef(x,c)}{\coef(x,c')}$, and in the latter case $0\leq \sigma\leq \frac{\rhs(c)}{\rhs(c')}<\sigma' = 0$, which are both contradictions.
+
+In the case where $\var(c')=\emptyset$, then we have that $\sigma'\geq 0$ by definition. \eqref{eq:lessStrict} implies that $\coef(x,c)\leq 0$ for all $x\in \var(\{c,c'\})$, so $\coef(x,c)\leq \sigma'\cdot\coef(x,c') = 0$. 
+If $\rhs(c')=0$ then \eqref{eq:lessStrict} implies that $\rhs(c)\geq 0=\sigma'\cdot \rhs(c')$. 
+If $\rhs(c)\neq 0$ then either $\frac{\rhs(c)}{\rhs(c')}\geq 0$ , or $\frac{\rhs(c)}{\rhs(c')}<0$. In the former case we have by definition that $\sigma'\cdot \rhs(c')=\frac{\rhs(c)}{\rhs(c')}\cdot \rhs(c') = \rhs(c)$. In the latter case, we must have that $\rhs(c')\leq 0$, since otherwise  $\frac{\rhs(c)}{\rhs(c')}<0\leq \sigma \leq \frac{\rhs(c)}{\rhs(c')}$ which is a contradiction. So $\rhs(c') <0$, which gives that $\rhs(c)>0$, and hence $\sigma'\cdot \rhs(c') \leq 0 < \rhs(c)$.
+\end{proof}	%	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\separating* %%Lemma2
+\begin{proof}
+Let $X = \VAR(S)$. Order the variables such that $x\prec y\prec z$ for all $x\in X\setminus Y, y\in Y$ and $z\in Z^0$. 
+
+First assume that $\ve{r}$ is a set of values for the variables in $X\setminus Y$ such that 
+$\ve{r}\in \proj_Y\big(\feas(S)\big)$. This means that there exists values for the variables in $Y\subseteq X$, $\ve{u}$, such that the values $(\ve{r},\ve{u})$ satisfy all (in)equalities $c\in S$. Hence $\sum_{x\in X\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in X\cap Y}\coef(y,c)\cdot u_y \odot_c\rhs(c)$ for all $c\in S$, where $r_x$ is the value of $x$ in $\ve{r}$ for all $x\in X\setminus Y$ and $u_y$ is the value of $y$ in $\ve{u}$ for all $y\in Y$. 
+%Hence $\vea(c_{X\setminus Y})\cdot \ve{r} + \vea(c_{Y})\cdot \ve{u} \odot_c\rhs(c)$ for all $c\in S$. 
+
+Now define 
+%$v_{z^0_{c,i}} = \sum_{x\in X_i\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in X_i\cap Y}\coef(y,c)\cdot u_y$  and 
+$v_{z^0_{c,i}} = \sum_{x\in X_i\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in X_i\cap Y}\coef(y,c)\cdot u_y$ for all $z^0_{c,i}\in Z^0$. Let $\ve{v}$ be the vector of all values in $\cup_{1\leq i\leq k^0}\set{v_{z^0_{c,i}}}{c\in S_\ttt}$ in the order given by $\prec$. 
+
+Let $c\in S^0_\ttt \cup\bigcup_{1\leq i\leq k^0} S^0_i = (S^0_\ttt)_{X\cup Z^0} \cup\bigcup_{1\leq i\leq k^0} (S^0_i)_{X\cup Z^0}$ be arbitrary. We will then show that $(\ve{r},\ve{u}, \ve{v})$ satisfy $c$, and hence $\ve{r}\in \proj_{Y\cup Z^0}\big(\feas(S^0_\ttt\cup\bigcup_{1\leq i\leq k^0} S^0_i)\big)=\proj_{Y\cup Z_0}\big(\feas(S)\big)$. 
+
+If $c \in (S^0_i)_{X\cup Z^0}$ for an $i$, then by construction either $c$ equals $c'_{X\cup Z^0}$ for a $c'\in S$ or $c$ equals $\mi{Def}(z^0_{c',i})$ for a $c'\in S_\ttt$. 
+In the former case, $\coef(x,c) = \coef(x,c')$ for all $x\in X$, and $\coef(x,c) = 0$ for all $x\in Z^0$.
+$(\ve{r},\ve{u},\ve{v})$ applied to $c$ is therefore
+\begin{align*}
+\vea(c)\cdot (\ve{r},\ve{u}, \ve{v})
+&=\sum_{x\in X\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in Y}\coef(y,c)\cdot u_y + \sum_{z\in Z^0}\coef(z,c)\cdot v_y\\
+&= \sum_{x\in X\setminus Y}\coef(x,c')\cdot r_x + \sum_{y\in Y}\coef(y,c')\cdot u_y 
+ + \sum_{z\in Z^0} 0 \cdot v_z\\
+&= \sum_{x\in X\setminus Y}\coef(x,c')\cdot r_x + \sum_{y\in Y}\coef(y,c')\cdot u_y \\
+&=\vea(c')\cdot(\ve{r},\ve{u})\odot_{c'}\rhs(c')
+\end{align*}
+since $c'\in S$ is satisfied by $(\ve{r},\ve{u})$. I.e. $c$ is satisfied by $(\ve{r},\ve{u}, \ve{v})$ (since $\odot_c = \odot_{c'}$ and $\rhs(c)=\rhs(c')$). 
+
+In the latter case ($c$ equals $\mi{Def}(z^0_{c',i})$ for a $c'\in S_\ttt$), $c$ is the equality $-z^0_{c',i} + \sum_{x\in X_i}\coef(x,c')\cdot x = 0$ extended to $X\cup Z^0$. 
+So $\coef(x,c) = \coef(x,c')$ for all $x\in X_i$, $\coef(z^0_{c',i}, c) = -1$, and $\coef(x,c) = 0$ for all $x\in X\cup Z_0\setminus (X_i\cup\{z^0_{c',i}\})$.
+$(\ve{r},\ve{u},\ve{v})$ applied to $c$ is therefore
+\begin{align*}
+\vea(c)\cdot(\ve{r},\ve{u},\ve{v})&=\sum_{x\in X\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in Y}\coef(y,c)\cdot u_y + \sum_{z\in Z^0}\coef(z,c)\cdot v_y\\
+&= \sum_{x\in X_i\setminus Y}\coef(x,c')\cdot r_x + \sum_{y\in X_i\cap Y}\coef(y,c')\cdot u_y 
+ -1\cdot v_{z^0_{c',i}}\\
+&= v_{z^0_{c',i}} - v_{z^0_{c',i}} = 0 = \rhs(c).
+\end{align*}
+I.e. $c$ is satisfied by $(\ve{r},\ve{u}, \ve{v})$. 
+
+Finally, if $c\in (S^0_\ttt)_{X\cup V^0}$ then by construction $c$ equals $c'^0_{decp}$ extended to $X\cup Z^0$ for a $c'\in S$, i.e. c equals the extension of $(\sum_{1\leq i\leq k^0}z^0_{c',i}) + \sum_{x\in X_\ttt}\coef(x,c')\cdot x\odot_{c'}\rhs(c')$. Hence $(\ve{r},\ve{u}, \ve{v})$ applied to $c$ is
+\begin{align*}
+\vea(c)\cdot(\ve{r},\ve{u}, \ve{v})
+&= \sum_{x\in X_\ttt\setminus Y}\coef(x,c')\cdot r_x + \sum_{y\in X_\ttt\cap Y}\coef(y,c')\cdot u_y 
+ +\sum_{1\leq i\leq k^0} v_{z^0_{c',i}}\\
+&= \sum_{x\in X_\ttt\setminus Y}\coef(x,c')\cdot r_x + \sum_{y\in X_\ttt\cap Y}\coef(y,c')\cdot u_y\\ 
+&\quad\quad + \sum_{1\leq i\leq k^0}\big(\sum_{x\in X_i\setminus Y}\coef(x,c')\cdot r_x + \sum_{y\in X_i\cap Y}\coef(y,c')\cdot u_y\big)\\
+&= \sum_{x\in X\setminus Y}\coef(x,c')\cdot r_x + \sum_{y\in Y}\coef(y,c')\cdot u_y\\
+&=\vea(c')\cdot(\ve{r},\ve{u})\; \odot_{c'}= \rhs(c') = \rhs(c),
+\end{align*}
+since $X\setminus Y = (X_1\setminus Y)\dot\cup \ldots\dot\cup (X_{k^0}\setminus Y)\dot\cup (X_\ttt\setminus Y)$ and
+$(X_1\cap Y)\dot\cup \ldots\dot\cup (X_{k^0}\cap Y)\dot\cup (X_\ttt\cap Y) = X\cap Y = Y$. Since $\odot_{c'}=\odot_c$ 
+we therefore have that $c$ is satisfied by $(\ve{r},\ve{u}, \ve{v})$. Hence $\proj_Y\big(\feas(S)\big)\subseteq \proj_{Y\cup Z^0}\Big(\feas\big(\mi{sep}(S)\big)\Big)$.
+\\\\
+%%%%%%%%%%%
+On the other hand assume that $\ve{r}$ consists of the values for the variables in $X\setminus Y$ such that $\ve{r}\in \proj_{Y\cup Z^0}\big(\feas(\mi{sep}(S))\big)=\proj_{Y\cup Z^0}\big(\feas(S^0_\ttt\cup\bigcup_{1\leq i\leq k^0} S^0_i)\big)$. Then there exists values $\ve{u}$ and $\ve{v}$ for the variables in $Y$ and $Z^0$, respectively, such that $(\ve{r}, \ve{u}, \ve{v})$ satisfies all (in)equalities $c$ in $S^0_\ttt\cup\bigcup_{1\leq i\leq k^0} S^0_i$. 
+To be able to refer to the values, let $r_x$ be the value in $\ve{r}$ for the variable $x\in {X\setminus Y}$,
+let $u_y$ be the value in $\ve{u}$ for $y\in Y$, and let $v_z$ be the value in $\ve{c}$ for $z\in Z^0$.
+
+Now take an arbitrary (in)equality $c$ in $S$. Either $\var(c)\subseteq X_i$ for an $0\leq i\leq k^0$, or there is no such $i$. 
+In the former case, by construction $c_{\VAR(S^0_i)}\in S^0_i$ for an $i$, and hence $c_{X\cup Z^0}\in S^0_\ttt\cup\bigcup_{1\leq i\leq k^0}S^0_i$, and thus it is satisfied by $(\ve{r}, \ve{u}, \ve{v})$. This means that 
+\begin{align*}
+\vea(c)\cdot (\ve{r},\ve{u}) &= \sum_{x\in X\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in Y}\coef(y,c)\cdot u_y \\
+&= \sum_{x\in X\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in Y}\coef(y,c)\cdot u_y 
+ + \sum_{z\in Z^0} 0 \cdot v_z\\
+&= \sum_{x\in X\setminus Y}\coef(x,c_{X\cup Z^0})\cdot r_x + \sum_{y\in Y}\coef(y,c_{X\cup Z^0})\cdot u_y 
+ + \sum_{z\in Z^0}\coef(z,c_{X\cup Z^0})\cdot v_z\\
+&=\vea(c_{X\cup Z^0})\cdot(\ve{r},\ve{u},\ve{v})\odot_{c_{X\cup Z^0}}\rhs(c_{X\cup Z^0})=\rhs(c).
+\end{align*}
+Since $\odot_c = \odot_{c_{X\cup Z^0}}$ this means that $(\ve{r},\ve{u})$ satisfies $c$. Thus $\ve{r} \in \proj_Y(\feas(c))$.
+
+In the latter case (i.e. there is no $i$ such that $\var(c)\subseteq X_i$), we get that for each $1\leq i\leq k^0$, $\mi{Def}(z^0_{c,i})$ extended to $X\cup Z^0$ belongs to $S^0_\ttt\bigcup_{1\leq i\leq k^0} S^0_i$ and are therefore satisfied, i.e. $(\ve{r},\ve{u},\ve{v})$ applied to $-z^0_{c,i} + \sum_{x\in X_i}\coef(x,c)\cdot x$ equals $0$ for all $i$. 
+That is, 
+$-v_{z^0_{c,i}} + \sum_{x\in X_i\setminus Y}\coef(x,c)\cdot r_x +\sum_{y\in X_i\cap Y}\coef(y,c)\cdot u_y = 0$. Hence we must have that $v_{z^0_{c,i}} = \sum_{x\in X_i\setminus Y}\coef(x,c)\cdot r_x +\sum_{y\in X_i\cap Y}\coef(y,c)\cdot u_y$. 
+
+Likewise, $c^0_{decp}$ is in $S^0_\ttt$ and it is satisfied, i.e. 
+$\sum_{1\leq i\leq k^0} v_{z^0_{c,i}} + \sum_{x\in X_\ttt\setminus Y}\coef(x,c)\cdot r_{x}+ \sum_{y\in X_\ttt\cap Y}\coef(x,c)\cdot u_{y} \odot_c \rhs(c)$.
+
+From this we gather that 
+\begin{align*}
+\vea(c)\cdot(\ve{r},\ve{u})&=\sum_{x\in X\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in Y}\coef(y,c)\cdot u_y \\
+& = \sum_{1\leq i\leq k^0}\big(\sum_{x\in X_i\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in X_i\cap Y}\coef(y,c)\cdot u_y \big)\\
+&\qquad+ \sum_{x\in X_\ttt\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in X_\ttt\cap Y}\coef(y,c)\cdot u_y\\
+&= \sum_{1\leq i\leq k^0}v_{z^0_{c,i}}
+ + \sum_{x\in X_\ttt\setminus Y}\coef(x,c)\cdot r_x + \sum_{y\in X_\ttt\cap Y}\coef(y,c)\cdot u_y\\
+&\odot_c \rhs(c).
+\end{align*}
+That is, $c$ is satisfied by $(\ve{r},\ve{u})$. 
+Hence $\ve{r} \in \proj_Y\big(\feas(S)\big)$, and  $\proj_{Y\cup Z^0}\Big(\feas\big(\mi{sep}(S)\big)\Big)\subseteq \proj_{Y}\big(\feas(S)\big)$.
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lmmmm*
+\begin{proof}
+First we will show that for all $c\in S_\ttt^0$ the following holds:
+\begin{equation}\label{eq:step}
+\feas(c^{l-1}_{decp}) = \proj_{Z^l}\Big(\feas\big(\{c^l_{decp}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\}\big)\Big).
+\end{equation}
+Order the variables such that $x\prec z^{l}_{c,j}$ for all $x\in X_\ttt \cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$ and all $1\leq j\leq k^l$, and such that $z^{l}_{c,i}\prec z^{l}_{c,j}$ iff $i<j$. 
+
+First assume that  $\ve{r}\in\feas(c^{l-1}_{decp})$, i.e. $\ve{r}$ defines values for variables in $X_\ttt\cup \bigcup_{1\leq i\leq k^{l-1}}\{z^{l-1}_{c,i}\}$ that satisfy $c^{l-1}_{decp}$. Let therefore $r_x$ be the value of $x$ in $\ve{r}$ for all $x\in X_\ttt\cup \bigcup_{1\leq i\leq k^{l-1}}\{z^{l-1}_{c,i}\}$.
+For all $1\leq i\leq k^l$ define values for $z^l_{c,i}$ as follows: 
+$v_{z^l_{c,i}} = \sum_{j\in P^l_i}r_{z^{l-1}_{c,i}}$ %= \sum_{j\in P^l_i}r_{z^{l-1}_{c,i}}$. 
+Let $\ve{v} = (v_{z^l_{c,1}}, \ldots, v_{z^l_{c,k^l}})$.
+Then $(\ve{r},\ve{v})$ applied to $c^l_{decp}$ is
+\begin{align*}
+\sum_{1\leq i \leq k^l}v_{z^l_{c,i}} + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x
+& = \sum_{1\leq i \leq k^l}(\sum_{j\in P^l_i}r_{z^{l-1}_{c,i}}) + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x\\
+&\overset{1}= (\sum_{1\leq i \leq k^{l-1}}r_{z^{l-1}_{c,i}}) + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x\\
+&=\vea(c^{l-1}_{decp})\cdot\ve{r} \odot_{c^{l-1}_{decp}} \rhs(c^{l-1}_{decp}),
+\end{align*}
+since $\ve{r}\in \feas(c^{l-1}_{decp})$. $1$ holds since $\{1,\ldots,k^{l-1}\} = P^l_1\dot\cup\ldots\dot\cup P^l_{k^l}$. Thus $(\ve{r},\ve{v})$ satisfies $c^l_{decp}$ (since $\odot_{c^l_{decp}}=\odot_{c^{l-1}_{decp}}$ and $\rhs(c^l_{decp})=\rhs(c^{l-1}_{decp})$).
+
+Now let $1\leq i\leq k^l$ be arbitrary. Then $(\ve{r},\ve{v})$ applied to $\mathit{Def}(z^l_{c,i})$ is
+\[
+-v_{z^l_{c,i}}+\sum_{j\in P^l_i}r_{z^{l-1}_{c,j}} = -v_{z^l_{c,i}} + v_{z^l_{c,i}} = 0 = \rhs(\mathit{Def}(z^l_{c,i})).
+\]
+Thus $(\ve{r},\ve{v})$ satisfies $\mathit{Def}(z^l_{c,i})$ for any $1\leq i\leq k^l$, too.
+
+That is, $\ve{r}\in\proj_{Z^l}\Big(\feas\big(\{c^l_{decp}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\}\big)\Big)$.
+\\\\
+On the other hand, assume that 
+$\ve{r}\in \proj_{Z^l}(\feas(\{c^l_{decp}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\}))$. Since $\{c^l_{decp}\}\cup\bigcup_{1\leq i\leq k^l}\{\mi{Def}(z^l_{c,i})\}$ is a system over $X_\ttt\cup \bigcup_{1\leq i\leq k^l}\{z^l_{c,i}\}\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$, $\ve{r}$ defines values for the variables in $X_\ttt\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$, so let 
+$r_x$ be the value of $x$ in $\ve{r}$ for all $x\in X_\ttt\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$.
+
+Then there exists values for the variables in $Z^l$, $\ve{u}$, such that $(\ve{r},\ve{u})$ satisfies $c^l_{decp}$ and $\mathit{Def}(z^l_{c,i})$ for all $1\leq i\leq k^l$. Hence we have for all $1\leq i \leq k^l$ that $-u_{z^l_{c,i}}+\sum_{j\in P^l_i}r_{z^{l-1}_{c,j}} = 0$, where $u_{z^l_{c,i}}$ is the value for $z^l_{c,i}$ in $\ve{u}$. 
+
+Now consider $\ve{r}$ applied to $c^{l-1}_{decp}$, which is an (in)equality over $X_\ttt\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$:
+\begin{align*}
+(\sum_{1\leq i \leq k^{l-1}}r_{z^{l-1}_{c,i}}) + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x
+&= (\sum_{1\leq i \leq k^l}\sum_{j\in P^l_i}r_{z^{l-1}_{c,i}}) + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x\\
+&= (\sum_{1\leq i \leq k^{l}}u_{z^{l}_{c,i}}) + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x\\
+&\odot_c \rhs(c),
+\end{align*}
+where the last (in)equality holds because $c^l_{decp}$ is satisfied by $(\ve{r},\ve{u})$. 
+Thus $\ve{r}$ satisfies $c^{l-1}_{decp}$, and we have shown \eqref{eq:step}.
+\\\\
+Let $V = VAR(S^l_\ttt\cup\bigcup_{1\leq i\leq k^l} S^l_i) = X_\ttt\cup Z^l \cup Z^{l-1}$. Now the statement in the lemma follows since
+\begin{align*}
+\proj_{Z^l}\big(\feas(S^l_\ttt \cup\bigcup_{1\leq i\leq k^l}S^l_i)\big)
+&=\proj_{Z^l}\Big(\feas\big((S^l_\ttt)_V \cup\bigcup_{1\leq i\leq k^l}(S^l_i)_V\big)\Big)\\
+&=\proj_{Z^l}\Big(\feas\big(\bigcup_{c\in S^0_\ttt}(\{c_{decp}^{l}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\})_V\big)\Big)\\
+&\overset{1}= \bigcap_{c\in S^0_\ttt}\proj_{Z^l}\Big(\feas\big((\{c_{decp}^{l}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\})_V\big)\Big)\\
+&\overset{2}= \bigcap_{c\in S^0_\ttt}\feas((c_{decp}^{l-1})_{V\setminus Z^l})\\
+&= \feas(\bigcup_{c\in S^0_\ttt}\{(c_{decp}^{l-1})_{V\setminus Z^l}\})
+= \feas((\bigcup_{c\in S^0_\ttt}\{c_{decp}^{l-1}\})_{V\setminus Z^l})\\
+&\overset{3}= \feas(S^{l-1}_\ttt).
+\end{align*}
+1 follows since from Lemma~\ref{lm:projection} item~\ref{lm:1.1} since $\var(\{c^l_{decp}\}\cup\bigcup_{i\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\})\cap\var(\{c'^l_{decp}\}\cup\bigcup_{i\leq i\leq k^l}\{\mathit{Def}(z^l_{c',i})\})=\emptyset$ for $c,c'\in S^0_\texttt{t}$ where $c\neq c'$, 2 follows from Lemma~\ref{lm:projection} item~\ref{lm:1.3}and the statement proven above, and 3 follows since $\VAR(S^{l-1}_\ttt) = X_\ttt\cup Z^{l-1} = V\setminus Z^l$. 
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lemmato*
+\begin{proof}
+We show by induction on $0\leq l\leq K$ that 
+\begin{equation}\label{claim}
+\bigcup_{1\leq i \leq k^l}\mathfrak{S}^{l}_1 = \bigcup_{1\leq i\leq k^0}S^0_i\cup\ldots\cup\bigcup_{1\leq i\leq k^l} S^l_i 
+\end{equation}
+For $l=0$ we have by definition that $S^0_i=\mathfrak{S}^0_i$ for all $1\leq i\leq k^0$, so $\bigcup_{1\leq i\leq k^0}S^0_i = \bigcup_{1\leq i\leq k^0}\mathfrak{S}^0_i$. Thus \eqref{claim} holds.
+
+Now assume that $0<l\leq K$ and that \eqref{claim} holds for all $0\leq l'<l$. 
+Let $X = \VAR(\bigcup_{1\leq i\leq k^0}S^0_i\cup\ldots\cup\bigcup_{1\leq i\leq k^l} S^l_i)=\bigcup_{1\leq i\leq k^0}X_i \cup \bigcup_{1\leq m \leq l}Z^m$.
+Then
+\begin{align*}
+\bigcup_{1\leq i\leq k^0}S^0_i\cup\ldots\cup\bigcup_{1\leq i\leq k^l} S^l_i
+&=\big(\bigcup_{1\leq i\leq k^0}S^0_i\cup\ldots\cup\bigcup_{1\leq i\leq k^l} S^l_i\big)_X\\
+&= \big(\bigcup_{1\leq i\leq k^0}S^0_i\cup\ldots\cup\bigcup_{1\leq i\leq k^{l-1}}S^{l-1}_i\big)_X\cup\big(\bigcup_{1\leq i\leq k^l} S^l_i\big)_X\\
+&\overset{\text{IH}}=\big(\bigcup_{1\leq i\leq k^{l-1}}\mathfrak{S}^{l-1}_i\big)_X\cup\big(\bigcup_{1\leq i\leq k^l} S^l_i\big)_X\\
+&=\big(\bigcup_{i\in P^l_1\cup\ldots \cup P^l_{k^l}}\mathfrak{S}^{l-1}_i\big)_X\cup\big(\bigcup_{1\leq i\leq k^l}S^l_i\big)_X\\
+&=\big(\bigcup_{1\leq i\leq k^l}\bigcup_{j\in P^l_i}\mathfrak{S}^{l-1}_i\big)_X\cup\big(\bigcup_{1\leq i\leq k^l}S^l_i\big)_X\\
+&=\bigcup_{1\leq i\leq k^l}\bigcup_{j\in P^l_i}(\mathfrak{S}^{l-1}_i)_X\cup\bigcup_{1\leq i\leq k^l}(S^l_i)_X\\
+&= \bigcup_{1\leq i\leq k^l}(\bigcup_{j\in P^l_i}\mathfrak{S}^{l-1}_j\cup S^l_i)_X\\
+&= (\bigcup_{1\leq i\leq k^l}\mathfrak{S}^l_i)_X = \bigcup_{1\leq i\leq k^l}\mathfrak{S}^l_i.
+\end{align*}
+Thus \eqref{claim} also holds for $l=K$, which means that 
+\[
+\mathfrak{S}^{K+1}_1 = S^{K}_\texttt{t} \cup\bigcup_{1\leq j\leq k^K}\mathfrak{S}^K_j =
+S^K_\texttt{t}\cup\bigcup_{1\leq i\leq k^0}S^0_i\cup\ldots\cup\bigcup_{1\leq i\leq k^K} S^K_i.
+\]
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\propto*
+\begin{proof}
+We will show the proposition by showing that 
+\begin{equation}\label{prop3}
+\proj_Y\big(\feas(S)\big) = \proj_{Y\cup Z^0\cup\ldots\cup Z^l}\big(\feas(S^l_\texttt{t}\cup\bigcup_{0\leq m\leq l}\bigcup_{1\leq i\leq k^m} S^m_i)\big)
+\end{equation}
+for all $0\leq l\leq K$. Then \eqref{prop3} holds for $K$ too, and hence $\proj_Y\big(\feas(S)\big) = \proj_{Y\cup Z^0\cup\ldots\cup Z^K}\big(\feas(S^K_\texttt{t}\cup\bigcup_{0\leq m\leq K}\bigcup_{1\leq i\leq k^m} S^m_i)\big) = \proj_{Y\cup Z^0\cup \ldots \cup Z^K}\big(\feas(\mathfrak{S}^{K+1}_1)\big)$ by Lemma~\ref{lemma2}.
+
+The proof is done by induction on $l$.
+
+For $l = 0$, Lemma~\ref{lm:separating} gives us that $\proj_Y\big(\feas(S)\big) = \proj_{Y\cup Z^0}\big(\feas(S^0_\ttt\cup\bigcup_{1\leq i\leq k^0} S^0_i)\big)$ which is what we need. 
+
+For $0<l\leq K$ we assume that \eqref{prop3} holds for all $0\leq l'<l$. For ease of notation we let in the following $\mathbf{Z} \odef Y\cup Z^0\cup\ldots\cup Z^{l-1}$ and $X = \VAR(S^l_\ttt)\cup \bigcup_{0\leq m\leq l}\bigcup_{1\leq i\leq k^m}\VAR(S^m_i)$. Then 
+\begin{align*}
+&\proj_{Y\cup Z^0\cup\ldots\cup Z^l}\big(\feas(S^l_\ttt\cup\bigcup_{0\leq m\leq l}\bigcup_{1\leq i\leq k^m} S^m_i)\big)\\
+&\quad=\proj_{Y\cup Z^0\cup\ldots\cup Z^l}\Big(\feas\big((S^l_\ttt)_X\cup\bigcup_{0\leq m\leq l}\bigcup_{1\leq i\leq k^m} (S^m_i)_X\big)\Big)\\
+&\quad=\proj_{\mathbf{Z}}\Big(\proj_{Z^l}\Big(\feas\big(((S^l_\ttt)_X\cup\bigcup_{1\leq i\leq k^l} (S_i^l)_X)\cup(\bigcup_{0\leq m\leq l-1}\bigcup_{1\leq i\leq k^m} (S^m_i)_X)\big)\Big)\Big)\\
+&\quad\overset{*}=\proj_{\mathbf{Z}}\Big(\proj_{Z^l}\Big(\feas\big((S^l_\ttt\cup\bigcup_{1\leq i\leq k^l} S_i^l)_X\big)\Big)\cap\feas\big(\bigcup_{0\leq m\leq l-1}\bigcup_{1\leq i\leq k^m} (S^m_i)_{X\setminus Z^l}\big)\Big)\\
+&\quad\overset{\substack{\text{Lemma~\ref{lm:projection} item \ref{lm:1.3}}\\+\text{Lemma~\ref{lm:4}}}}
+=\proj_{\mathbf{Z}}\Big(\feas\big((S^{l-1}_\texttt{t})_{X\setminus Z^l}\big)\cap\feas\big(\bigcup_{0\leq m\leq l-1}\bigcup_{1\leq i\leq k^m} (S^m_i)_{X\setminus Z^l}\big)\Big)\\
+&\quad=\proj_{\mathbf{Z}}\Big(\feas\big((S^{l-1}_\ttt)_{X\setminus Z^l}\cup\bigcup_{0\leq m\leq l-1}\bigcup_{1\leq i\leq k^m} (S^m_i)_{X\setminus Z^l}\big)\Big)\\
+&\quad=\proj_{\mathbf{Z}}\Big(\feas\big(S^{l-1}_\ttt\cup\bigcup_{0\leq m\leq l-1}\bigcup_{1\leq i\leq k^m} S^m_i\big)\Big)\\
+&\quad\overset{\text{IH}}=\proj_{Y}(S).
+\end{align*}
+Above, $*$ follows from and Lemma~\ref{lm:projection} item \ref{lm:1.2} since $\var((S^m_i)_X)\cap Z^l = \emptyset$ for all $m\leq l-1$ and $0\leq i\leq k^m$.
+By the principle of mathematical induction, \eqref{prop3} then holds for all $l\leq K$. 
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\proptre*
+\begin{proof}
+We proof the proposition by showing that 
+\begin{equation}\label{prop2}
+\proj_{Z^{l-1}\cup \ldots \cup Z^0\cup Y}\big(\feas(\mathfrak{S}^l_i)\big)=\feas(\mathfrak{E}^l_i)
+\end{equation}
+for all $0 \leq l \leq K+1$ and all $1\leq i \leq k^l$.
+This is done by induction on $l$.
+
+Let $l = 0$ and $0\leq i \leq k^0$ be arbitrary. Then by definition $\mathfrak{E}^0_i\in\prs_Y(S^0_i)$, so $\feas(\mathfrak{E}^0_i)=\proj_Y(\feas(S^0_i))=\proj_Y(\feas(\mathfrak{S}^0_i))$.
+
+For the induction step, let $0< l \leq K+1$ and assume that \eqref{prop2} holds for all $0\leq l'<l$.
+Let $0\leq i\leq k^l$ be arbitrary. In the following we let $\mathbf{Z} = Z^{l-2} \cup Z^{l-3}\cup\ldots \cup Z^0\cup Y$ and we let $X=\VAR(\mathfrak{S}^l_i)$. Then
+\begin{align*}
+&\proj_{Z^{l-1}\cup Z^{l-2}\cup\ldots\cup Z^0\cup Y}\big(\feas(\mathfrak{S}^l_i)\big)&\\ 
+&\quad=\proj_{Z^{l-1}\cup\mathbf{Z}}\big(\feas(S^l_i\cup\bigcup_{j\in P^l_i}\mathfrak{S}^{l-1}_j)\big) & \text{def. of }\mathfrak{S}^l_i\\
+&\quad= \proj_{Z^{l-1}}\Big(\proj_{\mathbf{Z}}\Big(\feas\big((S^l_i)_X\cup\bigcup_{j\in P^l_i}(\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)\\
+%&\quad= \proj_{Z^{l-1}}\Big(\proj_{\mathbf{Z}}\Big(\feas\big((S^l_i)_X\big)\cap\bigcap_{j\in P^l_i}\feas\big((\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)\\
+&\quad=\proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\big)\cap\proj_{\mathbf{Z}}\Big(\feas\big(\bigcup_{j\in P^l_j}(\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)
+&\substack{\text{Lemma~\ref{lm:projection} item \ref{lm:1.2}},\\\var((S^l_i)_X)\cap \mathbf{Z}= \emptyset}\\ 
+&\quad= \proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\big)\cap\bigcap_{j\in P^l_j}\proj_{\mathbf{Z}}\Big(\feas\big((\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)
+&\substack{\text{Lemma~\ref{lm:projection} item \ref{lm:1.1}},\\\var((\mathfrak{S}^{l-1}_{m})_X)\cap\var((\mathfrak{S}^{l-1}_{m'})_X)=\emptyset\\\text{ for } m\neq m'}\\
+&\quad \overset{\text{IH}}= \proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\big)\cap\bigcap_{j\in P^l_i}\feas\big((\mathfrak{E}^{l-1}_j)_{X\setminus \mathbf{Z}}\big)\Big)
+&\substack{\text{Lemma~\ref{lm:projection} item \ref{lm:1.3}},\\\text{Induction hypothesis}}\\
+&\quad = \proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\cup\bigcup_{j\in P^l_i}(\mathfrak{E}^{l-1}_j)_{X\setminus \mathbf{Z}}\big)\Big)\\
+&\quad = \proj_{Z^{l-1}}\Big(\feas\big((S^l_i\cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j)_{X\setminus \mathbf{Z}}\big)\Big)\\
+&\quad = \proj_{Z^{l-1}}\Big(\feas\big(S^l_i\cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j\big)\Big)&\text{See below}\\
+&\quad = \feas(\mathfrak{E}^l_i)&\mathfrak{E}^l_i\in \prs_{Z^{l-1}}(S^l_i\cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j)
+\end{align*}
+The second to last equality above holds because $\VAR(S^l_i \cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j )= X\setminus\mathbf{Z}$ which is proven below.
+Thus, \eqref{prop2} holds for $l$, and by the principle of mathematical induction it follows that \eqref{prop2} holds for $K+1$.
+\\\\
+To conclude the proof, we now show by induction on $l$ that the following holds for all $1\leq l\leq K+1$ and $1\leq i\leq k^l$.
+\begin{equation}\label{eq:induktion2}
+\VAR(S^l_i \cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j )= \VAR(\mathfrak{S}^l_i)\setminus (Y\cup\bigcup_{0\leq m\leq l-2} Z^m)
+\end{equation}
+
+For $l = 1$, we have for an arbitrary $1\leq i\leq k^1$ that 
+\begin{align*}
+\VAR(S^1_i \cup\bigcup_{j\in P^1_i}\mathfrak{E}^0_j) 
+& = \VAR(S^1_i) \cup\bigcup_{j\in P^1_i}\VAR(\mathfrak{E}^0_j) \\
+& = \VAR(S^1_i) \cup\bigcup_{j\in P^1_i}(\VAR(S^0_j)\setminus Y) &\mathfrak{E}^0_j\in\prs_Y(S^0_j)\text{ by def.}\\
+& = (\VAR(S^1_i) \cup\bigcup_{j\in P^1_i}\VAR(S^0_j))\setminus Y & \VAR(S^1_i) \cap Y = \emptyset\\  
+& = \VAR(S^1_i \cup\bigcup_{j\in P^1_i}S^0_j)\setminus Y\\  
+& = \VAR(\mathfrak{S}^1_i)\setminus Y & \text{def. of } \mathfrak{S}^1_i\\  
+& = \VAR(\mathfrak{S}^l_i)\setminus (Y\cup\bigcup_{0\leq m\leq l-1} Z^m).
+\end{align*}
+I.e. \eqref{eq:induktion2} holds for $l=1$.
+
+Now assume that $1<l\leq K+1$ and that \eqref{eq:induktion2} holds for all $1\leq l'< l$. Let $1\leq i \leq k^l$ be arbitrary.
+Then similarly
+\begin{align*}
+\VAR(S^l_i \cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j) 
+& = \VAR(S^l_i) \cup\bigcup_{j\in P^l_i}\VAR(\mathfrak{E}^{l-1}_j) \\
+& \overset{1}= \VAR(S^l_i) \cup\bigcup_{j\in P^l_i}\big(\VAR(S^{l-1}_j\cup\smashoperator{\bigcup_{k\in P^{l-1}_j}}\mathfrak{E}^{l-2}_k)\setminus Z^{l-2}\big)\\
+& \overset{\text{IH}}= \VAR(S^l_i) \cup\bigcup_{j\in P^1_i}\Big(\big(\VAR(\mathfrak{S}^{l-1}_j)\setminus (Y\cup\smashoperator{\bigcup_{0\leq m\leq l-3}}Z^m)\big)\setminus Z^{l-2}\Big)\\  
+& = \VAR(S^l_i) \cup\bigcup_{j\in P^1_i}\big(\VAR(\mathfrak{S}^{l-1}_j)\setminus (Y\cup\bigcup_{0\leq m\leq l-2}Z^m)\big)\\  
+& \overset{2}= \big(\VAR(S^l_i) \cup\bigcup_{j\in P^1_i}\VAR(\mathfrak{S}^{l-1}_j)\big)\setminus (Y\cup\bigcup_{0\leq m\leq l-2}Z^m)\\  
+& = \VAR(\mathfrak{S}^l_i)\setminus (Y\cup\bigcup_{0\leq m\leq l-2}Z^m) 
+\end{align*}
+1 holds because $\mathfrak{E}^{l-1}_j\in \prs_{Z^{l-2}}(S^{l-1}_j\cup\bigcup_{k\in P^{l-1}_j}\mathfrak{E}^{l-2}_k)$ by definition, and 2 holds because $\VAR(S^l_i)\cap (Y\cup\bigcup_{0\leq m\leq l-2}Z^m)=\emptyset$.
+
+Thus, \eqref{eq:induktion2} holds for all $1\leq l \leq K+1$.
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\picking*
+\begin{proof}
+By induction on $l$ we will show that $\feas(\mathfrak{E}^l_i(p))=\feas(\mathfrak{E}^l_i(p'))$ and $\VAR(\mathfrak{E}^l_i(p))=\VAR(\mathfrak{E}^l_i(p'))$for all $1\leq i\leq k^l$.
+
+For $l=0$ we have by definition that $\mathfrak{E}^0_i(p), \mathfrak{E}^0_i(p')\in\prs_Y(S^0_i)$ for all $1\leq i\leq k^0$. Hence $\VAR(\mathfrak{E}^0_i(p)) = \VAR(S^0_i)\setminus Y = \VAR(\mathfrak{E}^0_i(p'))$, and $\feas(\mathfrak{E}^0_i(p)) = \proj_Y(\feas(S^i_0)) = \feas(\mathfrak{E}^0_i(p'))$.
+
+Now assume that $0<l\leq K+1$, and assume that the induction hypothesis holds for all $0\leq l'<l$. Let $1\leq i\leq k^l$ be arbitrary. Let $X=\VAR(S^l_i) \cup\bigcup_{j\in P^l_i} \VAR(\mathfrak{E}^{l-1}_j(p)) \overset{\text{IH}}= \VAR(S^l_i) \cup\bigcup_{j\in P^l_i} \VAR(\mathfrak{E}^{l-1}_j(p'))$. 
+Since
+$\mathfrak{E}^l_i(p)\in \prs_{Z^{l-1}}(S^l_i \cup\bigcup_{j\in P^l_i} \mathfrak{E}^{l-1}_j(p))$ and
+$\mathfrak{E}^l_i(p')\in \prs_{Z^{l-1}}(S^l_i \cup\bigcup_{j\in P^l_i} \mathfrak{E}^{l-1}_j(p'))$, 
+we have that $\VAR(\mathfrak{E}^l_i(p))=X\setminus Z^{l-1} = \VAR(\mathfrak{E}^l_i(p'))$. 
+Further,
+\begin{align*}
+\feas(\mathfrak{E}^l_i(p))&= \proj_{Z^{l-1}}\Big(\feas\big(S^l_i\cup\bigcup_{j\in P^l_i} \mathfrak{E}^{l-1}_j(p)\big)\Big)\\
+							&= \proj_{Z^{l-1}}\big(\feas((S^l_i)_X)\cap\bigcap_{j\in P^l_i}\feas(\mathfrak{E}^{l-1}_j(p)_X)\big)\\
+							&\overset{\text{IH}}= \proj_{Z^{l-1}}\big(\feas((S^l_i)_X)\cap\bigcap_{j\in P^l_i}\feas(\mathfrak{E}^{l-1}_j(p')_X)\big)\\
+							&= \proj_{Z^{l-1}}\Big(\feas\big(S^l_i\cup\bigcup_{j\in P^l_i} \mathfrak{E}^{l-1}_j(p')\big)\Big)\\
+							&= \feas(\mathfrak{E}^l_i(p')).
+\end{align*}
+By the principle of mathematical induction this shows the proposition.
+\end{proof}

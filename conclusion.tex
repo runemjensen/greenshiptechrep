@@ -1,0 +1,23 @@
+\section{Conclusion}\label{sec:conclusion}
+In this report we have presented a framework for projecting large, block structured inequality systems. The method incorporates procedures for preprocessing (including removal of linearly dependent inequalities), Gauss-elimination, Fourier-Motzkin-elimination, parallel, full redundancy removal and {adjustment} of the edges of the projecting (i.e. an approximation) using sequential redundancy removal of ``almost redundant'' inequalities. Further, the method uses a {novel} decomposition of the input problem to exploit its block structure. 
+This decomposition method is usable not only together with Fourier-Motzkin elimination but with any other projection method; just replace $\Call{Project}{S^l_i,Y}$ in line~\ref{line:project1} and line~\ref{line:project2} of the \Call{Solve}{}-algorithm in Algorithm~\ref{alg:solve} with any other method producing a projection of $S^l_i$ w.r.t. $Y$.
+
+Further, we have applied the presented method to a problem within the domain of liner shipping as we have obtained capacity models of manageable size from much larger stowage models. The obtained models are small and use approximately 100 times fewer variables, yet provide a better representation of the inter-dependencies between the number of stowed containers of different types than the very simple capacity models that are currently used. 
+
+The results indicate that even though Fourier-Motzkin elimination has a bad time and space complexity, which often deems it unfit for practical use, it is possible to amend it to obtain projections of large, realistic size problems. 
+The execution time for the test cases is still high and impractical for repeated use in online algorithm, but for the purpose of projecting a model (inequality system) once to obtain another, smaller model, the method {seems} viable.
+
+\subsection{Future work}
+As already mentioned in Chapter~\ref{sec:related} there are several interesting directions for future work, including
+\begin{itemize}
+\item using better methods for finding and removing redundant inequalities; 
+\item using criteria such as \v{C}ernikov's (if compatible) to avoid the addition of some of the redundant inequalities;
+\item using other methods for approximating the projection, while naturally also evaluating if these are actually better;
+\item possibly find and use a better evaluation of when an approximation or adjustment of the projection is necessary.
+\end{itemize}
+
+Since our decomposition-approach also works for other projection methods, it is also evident to investigate whether it can be an advantage to combine this decomposition with other, potentially more efficient methods for projection.
+
+A particular approach that could be interesting to pursue in our case is to add \v{C}ernikov rules to the Fourier-Motzkin-procedure, and only look for (and remove) \emph{strictly} redundant inequalities in parallel after each elimination. This should be done for each subproblem, while a full redundancy removal and/or approximation of the projection should be done when subproblems are combined at the ``next level'' of the decomposition, at which point the index-set would also be reset. Instead of using the sequential redundancy check to approximate the projection by removing almost redundant inequalities, it would here be possible to implement another method, potentially the extreme point method or the convex hull method, both described in \cite{huynh92}. The approximation approach in \cite{shapot12} could also be considered, particularly using an increasing $\epsilon$-value and a measure relatiing to the size of the original problem to determine when approximations should be done and to what extend.   
+
+Other interesting topics for further research includes developing better heuristics for choosing the order of the variables to be substituted and deleted, plus automatic detection of useful decompositions of a given problem.

@@ -1,0 +1,399 @@
+\section{Basic Algorithm}\label{sec:basic}
+\subsection{Fourier-Motzkin-elimination}
+Traditionally, this method works on pure inequality systems (i.e. with no equalities), and we will describe it like that. Since, an (in)equality system easily can be translated into a pure inequality system, this does not cause any problems. The method is described below.
+
+The method eliminates the variables in $Y\subseteq X$ by creating new inequality systems in a stepwise fashion. At each step, one of the variables in $Y$ is eliminated from the current system to obtain the next system. A variable $x\in Y$ is projected from the pure inequality system $S$ as follows (see e.g. \cite{imbert93} or \cite{ziegler95}).
+
+Firstly, the inequalities are divided into disjoint sets depending on the sign of the variable's coefficient in the constraints. Thus, we define
+\begin{eqnarray*}
+\Pos_S(x) &\odef& \set{c\in S}{\coef(x,c) > 0},\\
+\Neg_S(x) &\odef& \set{c\in S}{\coef(x,c) < 0}, \text{ and }\\ 
+\mathit{Zero}_S(x) &\odef& \set{c\in S}{\coef(x,c) = 0}.
+\end{eqnarray*}
+To eliminate the variable $x$ and construct the next inequality system, we first set aside $\mathit{Zero}_S(x)$, or rather $\set{c_{X\setminus\{x\}}}{c\in \mathit{Zero}_S(x)}$. To this set we then add a new inequality for each combination of $c^+\in\Pos_S(x)$ and $c^-\in\Neg_S(x)$. This new inequality is constructed by first normalizing $c^+$ and $c^-$ such that their coefficients for $x$ are plus and minus $1$, respectively, and then the two normalized inequalities are added. In this inequality, the coefficient of $x$ is zero, and restricting the inequality to $X\setminus\{x\}$ we then get
+%is the inequality $\ve{a}\cdot \ve{x}\leq b$ and $c^-$ is the inequality $\ve{a}'\cdot \ve{x}\leq b'$, the resulting 
+the inequality $\FMcomb(x,c^+, c^-)$ over $X\setminus\{x\}$ given below. %-comb$c^+ \boxplus_x c^-$, 
+\begin{multline}
+%\begin{split}
+\label{eq:FMcomb}
+%\MoveEqLeft
+\FMcomb(x,c^+, c^-):\\ 
+\sum_{x'\in \VAR(S)\setminus\{x\}} \left(\frac{1}{\coef(x,c^+)}\coef(x',c^+) + \frac{1}{\coef(x,c^-)}\coef(x',c^-)\right)\cdot x'
+\leq \frac{1}{\coef(x,c^+)}\rhs(c^+) + \frac{1}{\coef(x,c^-)}\rhs(c^-)
+% 
+%\left(\frac{1}{\coef(x,c^+)} \ve{a} +\frac{1}{-\coef(x,c^-)} \ve{a}'\right)\cdot\ve{x} \leq \frac{1}{\coef(x,c^+)}b +\frac{1}{-\coef(x,c^-)}b'.
+%\end{split}
+\end{multline}
+%This inequality clearly does not use $x$ (the coefficient is $0$).%
+%
+The procedure is described in pseudocode in Algorithm~\ref{alg:FMBasic}.
+
+When eliminating a variable $x_i$, the inequalities in the constructed set $S'$ are all implied by the inequalities in $S$. On the other hand, it also holds that if $(x_1, x_2, \ldots, x_{i-1}, x_{i+1}, \ldots, x_n)$ satisfies the inequalities in $S'$ then there is an $x_i$ such that $(x_1, x_2, \ldots, x_{i-1}, x_i, x_{i+1}, \ldots, x_n)$ satisfies the inequalities in $S$ {(e.g. \cite{duffin74}, Lemma 1)}. That is, $S' = \proj_{\{x_i\}}(S)$.
+%\marginpar{How to write it without using the index $i$?}
+
+The disadvantage of the procedure is its complexity. Due to the combination of inequalities in each step, in the worst case scenario where $|\Pos_S(x)| = |\Neg_S(x)| = \frac{|S|}{2}$ for the current system $S$, the number of inequalities in the succeeding system is $\frac{1}{4}|S|^2$. This implies that (both time and space) complexity is double-exponential.  
+We also notice that the denser the system is, the more it will grow. 
+It should, however, also be emphasized that not all inequalities in a succeeding system are necessarily non-redundant.
+%
+\begin{algorithmic}
+\begin{algorithm}\caption{Eliminating variables from an inequality system $S$ using Fourier-Motzkin-elimination.}
+\label{alg:FMBasic}
+\Function{FM-Elim}{Inequality system $S$, variables to eliminate $Y\subseteq \VAR(S)$}
+	\State  $S'\gets S$, $Y'\gets Y$
+	\While{ $Y'\neq \emptyset$ }
+		\State $x\gets$ \Call{ChooseVariableToDelete}{$Y'$, $S'$}
+		\State $S' \gets$ \Call{FM-ElimVar}{$S'$, $x$}
+		\State Remove $x$ from $Y'$
+	\EndWhile
+	\State \Return $S'$
+\EndFunction
+\State
+\Function{FM-ElimVar}{Inequality system $S$, variable to eliminate $x\in var(S)$}
+\State Divide $S$ into $\Pos_S(x)$, $\Neg_S(x)$ and $\mathit{Zero}_S(x)$
+\State $S'\gets \set{c_{\VAR(S)\setminus\{x\}}}{c\in\mathit{Zero}_S(x)}$ 
+\ForAll{$c^+ \in \Pos_S(x)$}
+	\ForAll{$c^- \in \Neg_S(x)$}
+		\State Add $\FMcomb(x,c^+, c^-)$ to $S'$\Comment see \eqref{eq:FMcomb}
+	\EndFor
+\EndFor
+\State \Return $S'$
+\EndFunction
+\end{algorithm}
+\end{algorithmic}
+%
+The function \Call{ChooseVariableToDelete}{} in Algorithm~\ref{alg:FMBasic} is a heuristic to determine which variable among the ones needed to be eliminated that should be eliminated first. In principle, there are many choices for heuristics, but the most commonly used heurisitic is the greedy heuristic that aims at minimizing the size of the inequality system in the next step \cite{duffin74}. This is easy to calculate from the current system since the increase in size only depends on the size of the sets $\Pos_S$ and $\Neg_S$ for the variable in question. We have also chosen this heuristic, that is, the function \Call{ChooseVariableToDelete}{$Y,S$} returns 
+\[
+\argmin_{y\in Y}\big(|\Pos_S(y)||\Neg_S(y)| - |\Pos_S(y)|-|\Neg_S(y)|\big)
+\] 
+%
+{It should be noted, though, that Imbert \cite{imbert93} states in his conclusion to have found the related heuristic returning $\argmin_{y\in Y}|\Pos_S(y)||\Neg_S(y)|$ to be inferior to ``any other choice, even at random''. The particular experiments, results and the specific problems considered for the experiments is, however, not presented.}
+%
+\subsection{Gauss-elimination}
+When our (in)equality system contains equalities, it is often an advantage to let them remain equalities instead of converting each one to two inequalities. Firstly, they are then easier to identify, and instead of doing FM-elimination on a variable in an equality, we can isolate it in the equality and substitute it in the other (in)equalities. By doing this, we avoid the increase in inequalities that an FM-elimination of the variable would otherwise (in most cases) cause. The downside is, that we make the system more dense, which FM-elimination, however, does as well. This is e.g. done in \cite{simon05}.
+
+Given an equality $c$, %: \ve{a}\cdot\ve{x} = b$, 
+isolating and substituting the variable $x\in \var(c)$ in the (in)equality $c'$ for which $x\in\var(c')$ %: \ve{a}'\cdot\ve{x} \odot_{c'} b'$ 
+corresponds to scaling $c'$ and $c$ with $\frac{1}{|\coef(x,c')|}$ and $\frac{-\sign(x,c')}{\coef(x,c)}$, respectively\footnote{$\sign$ is the sign-function that returns $+1$, $-1$ or $0$ depending on the sign of its parameter.}, such that the two coefficients for $x$ are plus and minus 1, and then adding the resulting (in)equalities. Restricting the resulting (in)equality to $\VAR(S)\setminus\{x\}$ results in the inequality $\Gcomb(x,c,c')$ over $\VAR(S)\setminus\{x\}$ given below. %$(-\sign(\coef(x,c'))\boxtimes c)\boxplus_x c'$:
+\begin{multline}
+%\begin{split}
+\label{eq:Gauss}
+\Gcomb(x,c,c'):
+\sum_{x'\in\VAR(S)\setminus\{x\}}
+\left(  \frac{-\sign(\coef(x, c'))}{\coef(x,c)}\coef(x',c) 
++ \frac{1}{|\coef(x, c')|}\coef(x',c')\right)\cdot x' \\
+\odot_{c'} \frac{-\sign(\coef(x, c'))}{\coef(x,c)}\rhs(c)+ \frac{1}{|\coef(x,c')|}\rhs(c').
+%\left(\frac{-\sign(\coef(x, c'))}{\coef(x,c)}\ve{a}+ \frac{1}{|\coef(x, c')|}\ve{a}'\right)\cdot\ve{x} \odot_{c'} \frac{-\sign(\coef(x, c'))}{\coef(x,c)}b+ \frac{1}{|\coef(x,c')|}b'.
+%\end{split}
+\end{multline} 
+%
+In our method, we will define auxiliary variables (that should not be eliminated) and we will therefore have a number of equalities which we will use to make Gauss-elimination. The pseudocode for this step is given in Algorithm~\ref{alg:Gauss}.
+%
+\begin{algorithm}
+\begin{algorithmic}\caption{Eliminating variables from an (in)equality system $S$ using Gauss-elimination.}
+\label{alg:Gauss}
+\Function{Gauss-Elim}{(In)equality system $S$, variables to be eliminated $Y\subseteq \VAR(S)$}
+\State $S'\gets S$
+\While{$Y\cap \var(\eqs(S')) \neq \emptyset$}
+	\State $(x, c) \gets \Call{ChooseVarInEquality}{Y,S'}$ 
+	\State $S'\gets \Call{Gauss-ElimVar}{S', c, x}$
+\EndWhile
+\State\Return $S'$
+\State
+\Function{Gauss-ElimVar}{System $S$, equality $c$, variable $x\in \var(c)$}
+	\State $S'\gets \emptyset$
+	\State Remove $c$ from $S$
+	\ForAll{$c'$ in $S$}
+		\If{$\coef(x, c') = 0$}
+			\State Add $c'_{\VAR(S)\setminus\{x\}}$ to $S'$
+		\Else
+			\State Add $\Gcomb(x,c,c')$ to $S'$ \Comment see \eqref{eq:Gauss}
+		\EndIf
+	\EndFor
+	\State \Return $S'$ 
+\EndFunction
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+Also for this procedure, a heuristic is used for choosing which variable - and in this case also which equality - should be used in the elimination. Again, there are many choices and we have decided to %mainly use the one that finds the shortest equation that has a variable in $Y$, and then choose the variable that has the fewest occurrences in the system, or the other way around, 
+first find the variable (occurring in equations) that occurs the fewest times, and then find the shortest equation using this variable. I.e. the function \Call{ChooseVarInEquality}{$Y,S$} returns $(y,e)$ where
+%\[
+%e = \argmin_{c\in \eqs(S)}|\var(c)|\; \text{ and }\;y = \argmin_{x\in \var(e)}|\set{c\in S}{x\in \var(c)}|,
+%\] 
+%or
+\[
+y = \smashoperator[r]{\argmin_{x\in \var(\eqs(S))}}|\set{c\in S}{x\in \var(c)}|\; \text{ and }\; e = \smashoperator[r]{\argmin_{c\in \eqs(S).y\in \var(c)}}|\var(c)|.
+\] 
+
+\subsection{Preprocessing}
+The purpose of preprocessing is to simplify the (in)equality system that we are dealing with, i.a. to reduce it by removing redundant inequalities that are easily identifiable, updating bounds for variables and substituting variables with implied values \emph{such that} $\feas(S)$ does not change. {Likewise, preprocessing can be used to figure out at an early stage whether the problem is infeasible. However, we assume that the problem is feasible and do not spend time on checking this during the preprocessing step.}
+
+Our preprocessing part consists of the following steps, described below: removing empty (in)equalities and unused variables, updating bounds for (in)\-equali\-ties with only one variable, substituting variables with fixed values, eliminating variables with only one sign occurring, updating bounds due to extreme values, removing linearly dependent (in)equalities \cite{lassez93}, and removing less strict (in)equalities. The basic preprocessing steps can be found in e.g. \cite{brearley75}, \cite{andersen95} and \cite{maros}.
+
+When doing these steps, we take into consideration that not all variables should be eliminated, in fact there are some that we need to keep. This is particularly the case when we use auxiliary variables for decomposing our system (see Section~\ref{sec:decomp} later). Therefore we do not remove variables that are not in $Y$, and we do not substitute them with a value during the preprocessing {without keeping track of these substitutions}. 
+%
+\subsubsection{Removing empty (in)equalities and unused variables}\label{para:emptyIneqs} 
+We remove from $S$ all inequalities $c$ for which $|\var(c)| = 0$. %\red{If $\rhs(c)< 0$, or $c$ is an equality and $\rhs(c)\neq 0$, then $S$ is unsatisfiable/infeasible.} 
+
+For all $x\in Y$ for which $x \notin \var(S)$, we simply remove $x$ from $\VAR(S)$, i.e. we restrict $S$ to $\VAR(S)\setminus\{x\}$. Notice that we do not remove variables that we have not specifically expressed a desire to eliminate.
+%	
+\subsubsection{Updating bounds for (in)equalities with only one variable}\label{para:singleton} For all inequalities $c$ for which $|\var(c)|=1$, we have that $c$ equals the inequality  $\coef(x,c)\cdot x \odot_c \rhs(c)$ for an $x\in X$. In this case, we update the bound(s) for $x$ accordingly. That is, if $\coef(x,c)>0$ and $\frac{\rhs(c)}{\coef(x,c)}<\UB(x)$, then $c$ is removed from $S$ and $\UBc(x)$ is replaced with the inequality $x \leq \frac{\rhs(c)}{\coef(x,c)}$.  
+Similarly, if $\coef(x,c)<0$ and $\frac{\rhs(c)}{\coef(x,c)}> \lb(x)$, then $c$ is removed from $S$ and $\lbc(x)$ is replaced with the inequality $-x \leq - \frac{\rhs(c)}{\coef(x,c)}$. 
+
+If $c$ is an equality, both bounds are updated. 
+%
+\subsubsection{Substituting variables with fixed value}\label{para:fixed} If $\UB(x) = \lb(x)$ for a variable $x\in X$, then we substitute $x$ with the given value in all (in)equalities in $S$. 
+
+If the variable $x$ is not in $Y$, meaning that we have not specified that it should be removed, then we do maintain the bounds of $x$ in the system.
+%\red{If $\lb(x)>\UB(x)$ then $S$ is unsatisfiable/infeasible.}
+%
+\subsubsection{Eliminating variables with only one sign occurring}\label{para:oneSign} If a variable $x$ only occurs with a non-negative coefficient in $S$ (excluding bounds) and does not occur in equalities, then we can substitute it with its lower bound if one exists; this actually corresponds to doing FM-elimination on $x$ where $\Neg_S(x)$ equals $\{\lbc(x)\}$. Notice that unlike the other described steps, this step changes the feasible area of $S$, though, this change is part of the overall goal of the whole procedure. 
+
+In other words, for all $x\in Y\cap P$ for which $\lb(x)$ exists, where 
+\[
+P=\set {x\in \VAR(S)\setminus \var(\eqs(S))}{\forall c\in S\setminus\{\lbc(x)\}\ .\ \coef(x,c)\geq 0},
+\] 
+we substitute $x$ with $\lb(x)$ in all (in)equalities in $S$. If $x\in Y\cap P$ and $x$ has no lower bound, we can just remove all inequalities $c$ for which $x\in \var(c)$, since this also corresponds to doing an FM-elimination of $x$. 
+Notice, that we again only do this for variables that we have confirmed should be eliminated. %\red{but can't we also do it otherwise and just maintain bounds?}
+	
+Similarly, we also substitute  variables in 
+\[
+N=\set {x\in \VAR(S)\setminus\var(\eqs(S))}{\forall c\in S\setminus\{\UBc(x)\}\ . \ \coef(x,c)\leq 0}
+\] 
+%$N = \set {x\in X}{\coef(x,c) \leq 0 \text{ for all }c \in S}$ 
+with their upper bound if it exists and if the variable is in $Y$. As above, if a variable $x\in N\cap Y$ has no upper bound, then we simply remove all inequalities $c$ for which $x\in \var(c)$.
+%	
+\subsubsection{Updating bounds due to extreme values} For an (in)equality $c$ in $S$ we can -- given appropriate bounds for the variables in $\var(c)$ -- calculate the highest and the lowest value that the left-hand-side of $c$ can reach when variables are restricted to $\feas(S)$ (\cite{maros}, {\cite{andersen95}}). The highest value is
+	\begin{equation}\label{eq:high}
+	\mathit{high}(c)=\smashoperator[r]{\sum_{x\in X.\coef(x,c)>0}}\coef(x,c)\cdot\UB(x) + \smashoperator[r]{\sum_{x\in X.\coef(x,c)<0}}\coef(x,c)\cdot\lb(x),
+	\end{equation}
+	while the lowest value is
+	\begin{equation}\label{eq:low}
+	\mathit{low}(c)=\smashoperator[r]{\sum_{x\in X.\coef(x,c)>0}}\coef(x,c)\cdot\lb(x) + \smashoperator[r]{\sum_{x\in X.\coef(x,c)<0}}\coef(x,c)\cdot\UB(x).
+	\end{equation}
+If $c$ is an equality, and %\red{either $high(c) < \rhs(c)$ or $low(c)> \rhs(c)$ then $c$ (and thus the whole system $S$) is unsatisfiable/infeasible.} If 
+$\mathit{low}(c) = \rhs(c)$ ($\mathit{high}(c) = \rhs(c)$) then all variables in $\var(c)$ needs to be have the value of the bound that gives the lowest (highest) value in order to be in $\feas(S)$, and we substitute the variables in $\var(c)$ with these values in all (in)equalities in $S$.
+
+If $c$ is not an equality then we still substitute variables with the appropriate value if $\mathit{low}(c) = \rhs(c)$.  %.\red{If $low(c)>\rhs(c)$ then the system is unsatisfiable, but} if 
+If $\mathit{high}(c)\leq\rhs(c)$ then $c$ will always be satisfied for variables in $\feas(S\setminus\{c\})$, i.e. it is redundant and we will remove it. 
+\\\\
+Now assume $x$ is a variable in $\var(c)$. 
+{Staying within the feasible area given by $c$ and also satisfying the bounds for the other variables in $c$ can then imply tighter bounds on $x$.}
+
+As in \eqref{eq:low} we can calculate the lowest reachable value for $c$ (within $\feas(S)$) when disregarding the contribution of $x$ by not summing over $x$. We will call this value $\mathit{low}_x(c)$. We notice that if $\mathit{low}(c)$ exists, we have that $\mathit{low}_x(c) = \mathit{low}(c) - \coef(x,c)\cdot \mathit{bound}(x)$, where $\mathit{bound}(x)=\lb(x)$ if $\coef(x,c)>0$, and $\mathit{bound}(x)= \UB(x)$ if $\coef(x,c)<0$.
+
+In order for $\feas(c)$ to be non-empty it is then necessary that 
+	$\coef(x,c)\cdot x + \mathit{low}_x(c)$ is at most $\rhs(c)$. 	
+That is, if $\coef(x,c)>0$ then $x\leq \frac{\rhs(c)-\mathit{low}_x(c)}{\coef(x,c)}$, and if $\coef(x,c)<0$ then $x\geq \frac{\rhs(c)-\mathit{low}_x(c)}{\coef(x,c)}$. We therefore update the upper of lower bound for $x$ correspondingly.
+	
+%Updating the bounds of variables like this could then lead to new bounds being forced and so on. %, so in principle we shuld continue doing this, but (due to precision of computer?) we only run thorugh all variables 3 times (I think)  
+
+This step is performed as in Algorithm~\ref{alg:bounds}. 
+We say that $x\in\var(c)$ has an appropriate high bound, if $\UB(x)$ exists when $\coef(x,c)>0$, and $\lb(x)$ exists when $\coef(x,c)<0$. Likewise, $x\in\var(c)$ has an appropriate low bounds if $\lb(x)$ exists when $\coef(x,c)>0$, and $\UB(x)$ exists when $\coef(x,c)<0$.
+
+\begin{algorithm}\caption{Removing (in)equalities that are implied due to the bounds of its variables, and updating bounds of variables implied by the right-hand-side of the (in)equality (and the bound of the other variables).}
+\label{alg:bounds} 
+\begin{algorithmic}
+\Function{ForcedByBounds}{(In)equality system $S$}
+\State $S'\gets S$
+\For{$c \in S'$}
+	\State $(red, Subst) \gets \Call{RedundantDueToBounds?}{S', c}$
+	\If{$red$}
+		\State Remove $c$ from $S'$
+		\ForAll{$(x,v)\in Subst$}
+			\State Substitute $x$ with $v$ in all (in)equalities in $S'$
+		\EndFor
+	\Else
+		\State $(\mi{UBs}, \mi{lbs})\gets$\Call{ImpliedBounds}{$S', c$}
+		\ForAll{$(x,b)\in \mi{UBs}$}
+			\State Replace $\UBc(x)$ in $S'$ with $x\leq b$		
+		\EndFor
+		\ForAll{$(x,b)\in \mi{lbs}$}
+			\State Replace $\lbc(x)$ in $S'$ with $-x\leq -b$
+		\EndFor
+	\EndIf
+\EndFor
+\State\Return $S'$
+\EndFunction
+\State
+\Function{RedundantDueToBounds?}{$S$, $c\in S$}
+	\State $red \gets  \false$, $Subst \gets \emptyset$
+	\State $high\gets \infty$, $low\gets -\infty$ 
+	\If{$x$ has an appropriate high bound for all $x\in\var(c)$}
+		\State $high \gets \mathit{high}(c)$ \Comment see \eqref{eq:high}
+	\EndIf
+	\If{$x$ has an appropriate low bound for all $x\in\var(c)$}
+		\State $low\gets \mathit{low}(c)$ \Comment see \eqref{eq:low}
+	\EndIf
+	\If{ $low = \rhs(c)$} 
+		\State $red \gets \true$
+		\ForAll{$x\in\var\{c\}$}
+			\State Add $(x, x'\text{s appropriate low bound})$ to $Subst$
+%			\State Substitute $x$ with its appropriate low bound
+		\EndFor
+	\ElsIf{ $c\in\eqs(S)$ and $high = \rhs(c)$} 
+		\State $red \gets \true$
+		\ForAll{$x\in\var\{c\}$}
+			\State Add $(x, x'\text{s appropriate high bound})$ to $Subst$
+%			\State Substitute $x$ with its appropriate high bound
+		\EndFor
+	\ElsIf{ $high \leq \rhs(c)$} 
+		\State $red \gets \true$
+	\EndIf
+	\State\Return $(red, Subst)$
+\EndFunction
+\State
+\Function{ImpliedBounds}{$S$, $c \in S$}
+	\State $\mi{UBs}\gets \emptyset$, $\mi{lbs}\gets\emptyset$
+	\For{ $x \in \var(c)$ }
+		\If{$y$ has an appropriate low bound for all $y\in\var(c)\setminus\{x\}$}
+			\State $b\gets \frac{\rhs(c)-\mathit{low}_x(c)}{\coef(x,c)}$
+			\If{ $\coef(x,c)>0$ and $b < \UB(x)$ in $S$}
+%				\State $\UB(x)\gets b$
+				\State Add $(x, b)$ to $\mi{UBs}$
+			\ElsIf{ $\coef(x,c)<0$ and $b > \lb(x)$ in $S$}
+%				\State $\lb(x)\gets b$
+				\State Add $(x,b)$ to $\mi{lbs}$
+			\EndIf
+		\EndIf
+	\EndFor
+	\State\Return $(\mi{UBs},\mi{lbs})$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+We notice that the step ``updating bounds for (in)equalities with only one variable'' is a special case of the above.
+%
+\subsubsection{Removing linearly dependent (in)equalities}
+Consider the two \emph{different} (in)equalities $c$ and $c'$ in $S$. 
+Assume that the left-hand-side of $c$ is a multiple of the left-hand-side of $c'$, i.e. there is an $\sigma\in \mathbb{R}$ such that $\coef(x,c) = \sigma\cdot\coef(x,c')$ for all $x\in\var\{c,c'\}$. Given that $S$ is feasible, then one of the (in)equalities are redundant \cite{lassez93}. %More concretely, $c$ is redundant
+%If $\sigma\neq 0$ then this means that the defining hyperplanes of $c$ and $c'$ are parallel, and if $\sigma = 0$ then $\vea(c)=\ve{0}$.
+ 
+More concretely, we can conclude that $c$ is redundant in the following cases.
+
+\begin{itemize}
+\item $c\notin \eqs(S)$, $\sigma\geq 0$ and $\sigma\cdot \rhs(c')\leq \rhs(c)$. 
+\item $c\notin \eqs(S)$, $c'\in \eqs(S)$, $\sigma<0$ and  $\sigma\cdot \rhs(c')\leq \rhs(c)$. 
+\item $c,c'\in \eqs(S)$ and $\sigma\cdot \rhs(c')\leq \rhs(c)$. 
+\end{itemize}
+In all these cases it holds that if $\ve{r}\in\feas(c')$ then 
+\begin{equation}\label{eq:3cases}
+\vea(c)\cdot \ve{r} = \sigma\cdot \vea(c')\cdot \ve{r} \leq \sigma \cdot \rhs(c')\leq  \rhs(c).
+\end{equation}
+In the first two cases this means that $\ve{r}\in\feas(c)$, and hence $c$ is redundant. In the last case, since $S$ is assumed feasible there is an $\ve{r}'\in\feas(c)\cap\feas(c')$, i.e. $\rhs(c)=\vea(c)\cdot\ve{r}'=\sigma\cdot\vea(c')\cdot \ve{r}' = \sigma\cdot \rhs(c')$. Thus, $\vea(c)\cdot\ve{r}=\sigma\cdot\vea(c')\cdot\ve{r}=\sigma\cdot\rhs(c')=\rhs(c)$, and hence $c$ is redundant. 
+
+If $c$ is redundant because of an (in)equality $c'$ as above, we say that $c$ is \emph{linearly dependent} compared to $c'$\footnote{Note, \cite{lassez93} differentiates and  calls $c$ syntactically redundant if $\rhs(c)=\sigma\cdot\rhs(c')$ (for positive $\sigma$), and quasi-syntactically redundant in the first case (first item) considered.}.
+For a given pair of (in)equalities $c$ and $c'$ it is of course enough to check whether a specific value of $\sigma$, namely $\frac{\coef(x,c)}{\coef(x,c')}$ for the first variable in $\var(c)\cap\var(c')$, satisfies the given criteria; if $\var(c)\cap\var(c') = \emptyset$ then such an $\sigma$ does not exist unless $\var(c)=\var(c')=\emptyset$, which is a case we disregard here since it should be taken case of when removing empty (in)equalities.
+%
+%We notice that when adding a set of inequality $I$ to an inequality system $S$, which is known to not have any quasi-redundant inequalities (as is the case after a FM-elimination when new inequalities are added to $\mathit{Zero}_S$), then it is of course only necessary to compare the inequalities in $I$ to those in $I\cup S$ and vice versa.
+
+Linearly dependent (in)equalities are removed from the system $S$ by using \Call{RemoveLinearlyDepd}{} in Algorithm~\ref{alg:quasi}.  
+
+\begin{algorithm}\caption{Removing linearly dependent (in)equalities from an (in)equality system $S$.% is assumed to already not have any quasi-redundant inequalities
+}\label{alg:quasi}
+\begin{algorithmic}[1]
+\Function{RemoveLinearlyDepd}{(In)equality system $S$}
+\State $S' \gets S$
+\ForAll{$c$ in $S'$}\label{line:quasi-for}
+	\ForAll{$c'$ in $S'\setminus\{c\}$}
+		\If{$c$ is linearly dependent compared to $c'$}\label{line:quasi-if}
+			\State Remove $c$ from $S'$
+		\EndIf
+	\EndFor
+\EndFor
+\State \Return $S'$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+%
+\subsubsection{Removing less strict inequalities}\label{para:lessStrict} 
+	Consider again two different (in)equalities $c$ and $c'$ in $S$. 
+	%
+	Assume that all variables in $\var(\{c,c'\})$ are non-negative (i.e. their lower bound are greater or equal to $0$), and there exists a scalar $\sigma\geq 0$ such that
+\begin{equation}\label{eq:lessStrict}
+\coef(x,c) \leq \sigma\cdot \coef(x, c') \text{ for all } x\in\var(\{c,c'\}) \text{ and } \sigma\cdot \rhs(c') \leq \rhs(c).
+\end{equation}
+%
+If $\ve{r}\in \feas(c')$, then \eqref{eq:lessStrict} implies that $\vea(c)\cdot\ve{r} \leq \sigma\cdot \vea(c')\cdot\ve{r} \leq \sigma\cdot \rhs(c') \leq \rhs(c)$, i.e. $\ve{r}\in\feas(c)$ if $c\notin\eqs(S)$. That is, $c$ is redundant if it is not an equality. 
+Assuming that $S$ is feasible and that \eqref{eq:lessStrict} holds while $c\in\eqs(S)$, then we must have that the inequalities in \eqref{eq:lessStrict} are in fact equalities; otherwise if $\ve{r}\in \feas(S)$ then either 
+$\vea(c)\cdot\ve{r} < \sigma\cdot \vea(c')\cdot\ve{r} \leq \sigma\cdot \rhs(c') \leq \rhs(c) = \vea(c)\cdot\ve{r}$, or  $\vea(c)\cdot\ve{r} \leq \sigma\cdot \vea(c')\cdot\ve{r} \leq \sigma\cdot \rhs(c') < \rhs(c) = \vea(c)\cdot\ve{r}$, which are both contradictions. This again implies that $c$ is redundant since $\ve{r}\in\feas(c')$ implies  $\vea(c)\cdot\ve{r} = \sigma\cdot \vea(c')\cdot\ve{r} = \sigma\cdot \rhs(c') = \rhs(c)$.
+	
+%In addition, if $\coef(x,c') < 0$ then $\frac{\coef(x,c)}{\coef(x,c')} \geq s \geq 0$, i.e. $\coef(x,c)\leq 0$ (1). Likewise, if $b'= 0$ then $b \geq s \cdot b' = 0$ (4).   
+For given inequalities $c$ and $c'$ it is enough to check whether a specific value of $\sigma$ satisfies \eqref{eq:lessStrict} (see Proposition~\ref{prop:lessStrict} below). If this is the case, we say that $c$ is \emph{less strict} than $c'$.
+
+\begin{restatable}{prop}{lessStrict}\label{prop:lessStrict}
+Let $c$ and $c'$ be given and assume that all variables in $\var(\{c,c'\})$ are non-negative. If \eqref{eq:lessStrict} hold for an $\sigma\geq 0$, then \eqref{eq:lessStrict} holds for $\sigma'\geq 0$ given below.
+
+If there exists an $x\in\var(c')$ such that $\coef(x,c')<0$ then
+\[
+\sigma' = \left\{\begin{array}{ll}
+				\min( m, \frac{\rhs(c)}{\rhs(c')})& \text{if } \rhs(c') > 0\\
+				m 										& \text{otherwise}
+				\end{array}\right.,
+\text{ where }
+m = {\min_{\substack{x\in \var(c').\\ \coef(x,c')<0}}}\frac{\coef(x,c)}{\coef(x,c')}.
+\]
+Otherwise, if $\coef(x,c')\geq 0$ for all $x\in\var(c')$ and $\var(c')\neq \emptyset$, then  	
+\[
+\sigma' = \left\{\begin{array}{ll}
+					\max(m', \frac{\rhs(c)}{\rhs(c')},0)&\text{if } \rhs(c') < 0\\
+					\max(m',0)							& \text{otherwise}\end{array}\right.,
+\text{ where }
+m' = {\max_{\substack{x\in \var(c').\\ \coef(x,c')>0}}}\frac{\coef(x,c)}{\coef(x,c')}.
+\]
+Otherwise
+$\sigma' = \left\{\begin{array}{ll}\max(\frac{\rhs(c)}{\rhs(c')},0)& \text{if } \rhs(c')\neq 0\\0&\text{otherwise}\end{array}\right.$.
+\end{restatable}
+\begin{proof}
+See Appendix.
+\end{proof}	
+
+We implement the removal of less strict inequalities in a similar way to how the removal of linearly dependent inequalities are done. That is, we do the same as in Algorithm~\ref{alg:quasi}, where line~\ref{line:quasi-if} has been replaced with checks for whether $c$ is less strict than $c'$. According to the above, we can check this by checking that all variables in $\var(\{c,c'\})$ are non-negative, and \eqref{eq:lessStrict} holds for $\sigma$ given in Proposition~\ref{prop:lessStrict}.  
+%
+%{So we then repeat the above steps as long as ``something happens''/the system has changed, that is, an (in)equality or variable has been removed or substituted with a value, or a bound has been updated. \red{(Though, some steps are repeated in them selves before moving on to the next one etc. Should I really describe this?)}  
+\subsubsection{Overall preprocessing step}
+The overall preprocessing step then consists of doing all the above mentioned steps repeatedly in a cycle, as long as ``something happens'' in a cycle, that is, an (in)equality or variable has been removed or substituted with a value, or a bound has been updated.
+%\marginpar{I could implement it as in \cite{andersen95}}
+\begin{algorithm}\caption{Preprocessing an (in)equality system $S$. The variables in $\VAR(S)\setminus Y$ should be kept.}\label{alg:prep}
+\begin{algorithmic}
+\Function{Preprocess}{(In)equality system $S$, variables $Y\subseteq \VAR(S)$}
+\State $S'\gets S$
+\Do
+	\State $\mi{Start}\gets S'$
+	\State $S'\gets$\Call{RemoveEmptyIneqs}{$S'$, $Y$} \Comment See Section~\ref{para:emptyIneqs}
+	\State $S'\gets$\Call{UpdateBoundsOneVar}{$S'$, $Y$}\Comment See Section~\ref{para:singleton}
+	\State $S'\gets$\Call{SubstFixedVars}{$S'$, $Y$}\Comment See Section~\ref{para:fixed}
+	\State $S'\gets$\Call{RemoveUnusedVars}{$S'$, $Y$}\Comment See Section~\ref{para:emptyIneqs}
+	\State $S'\gets$\Call{RemoveVarsWithOneSign}{$S'$, $Y$}\Comment See Section~\ref{para:oneSign}
+	\State $S'\gets$\Call{ForcedByBounds}{$S'$, $Y$}\Comment See Algorithm~\ref{alg:bounds}
+	\State $S'\gets$\Call{RemoveLinearlyDepd}{$S'$, $Y$}\Comment See Algorithm~\ref{alg:quasi}
+	\State $S'\gets$\Call{RemoveLessStrictIneqs}{$S'$, $Y$}\Comment See Section~\ref{para:lessStrict}
+\doWhile{$S'\neq \mi{Start}$}
+\State Return $S'$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+%
+%Nævn navne på disse functioner i hvert afsnit.
+\subsection{Removing redundancy}
+As previously described, at each step of the FM-elimination, the number of (in)equalities will grow with $|\Pos_S(x)|\cdot|\Neg_S(x)| - |\Pos_S(x)| -|\Neg_S(x)|$ inequalities. 
+Unless either $\Pos_S(x)$ or $\Neg_S(x)$ equals one, or both numbers equal two, this will account for an increase in the number of inequalities. For a large, dense system, the growth will be substantial, which prohibits it from use for practical purposes \emph{if} the added inequalities are non-redundant ({See e.g. \cite{lassez93} and \cite{lukatskii08}}). However, many of the added inequalities are potentially redundant, and it would greatly improve the applicability of the procedure if the addition of (too many) redundant inequalities can be (efficiently) avoided, or the redundant inequalities can be removed (efficiently) after they have been added, or both.
+
+Theoretically, all redundant inequalities can be removed from an (in)equality system $S$ by examining each inequality in turn and remove them when the property in \eqref{eq:redundant} holds, see Algorithm~\ref{alg:RedRem}. Notice, that this procedure does not examine equalities; this could of course have been implemented, but we chose not to, partly for reasons to be revealed later (see Section~\ref{sec:decomp}).
+
+We notice that if $c$ is a non-redundant inequality in $S$ that lies in $\mathit{Zero}_S(x)$ for some variable $x$, then $c_{\VAR(S)\setminus\{x\}}$ is also a non-redundant inequality in $S'$ for all $S'\in\prs_{\{x\}}(S)$.  Therefore, assuming that we have already removed redundant inequalities from the system $S$, it is therefore only necessary to check all the new inequalities being added to the system after each FM-elimination.
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\caption{Removing redundant inequalities from an (in)equality system $S$. The maximum value in line~4 can be calculated with optimization software; we have used IBM's CPLEX}\label{alg:RedRem}
+\Function{RemoveRedundantIneqs}{(In)equality system $S$, Inequalities to be checked $C\subseteq S\setminus\eqs(S)$}
+	\State $S'\gets S$
+	\ForAll{$c\in C$}
+		\If{$\max\set{\vea(c)\cdot\ve{r}}{\ve{r}\in \feas(S'\setminus\{c\})}\leq \rhs(c)$} %%Can't make label work correctly
+			\State Remove $c$ from $S'$
+		\EndIf
+	\EndFor
+	\State \Return $S'$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+This method can then be called at ``appropriate'' times during the main algorithm, for example each time a certain number of inequalities have been added since last redundancy check, or possibly after every elimination. 

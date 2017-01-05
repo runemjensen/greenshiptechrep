@@ -123,7 +123,8 @@ We notice that the inequalities that should be checked for redundancy is a subse
 \end{algorithmic}		
 \end{algorithm}
 %
-\subsection{Projection Framework}
+\subsection{Combining strategies}
+For projecting an (in)equality system we combine the various strategies described so far.
 We use \Call{Solve}{} from Algorithm~\ref{alg:solve} to find the projection of $S$ w.r.t. $Y\subseteq \VAR(S)$. The method \Call{Project}{} is presented below in Algorithm~\ref{alg:project}. It consists of steps of preprocessing the system, doing Gauss-elimination and doing FM-elimination on the system. After each FM-elimination of a variable some (timewise) ``cheap'' preprocessing steps are done, and we also make sure to remove linearly dependent (in)equalities as well. 
 Hence \Call{CleanUp}{} consists of %the (timewise) ``cheap'' preprocessing steps plus \Call{RemoveQuasiIneqs}{}, i.e. 
 Algorithm~\ref{alg:prep} minus the calls to \Call{ForcedByBounds}{} and \Call{RemoveLessStrictIneqs}{}.
@@ -596,7 +597,7 @@ Let $p,p':2^{2^\ie}\to 2^\ie$ be such that $p(M),p'(M)\in M$ for all $M\in 2^{2^
 See Appendix.
 \end{proof}
 %
-Below in Algorithm~\ref{alg:solve} we present an algorithm for producing the system $\mathfrak{E}^l_i$ according to the definition in \eqref{eq:mathfrakE} for some choice-function $\mathit{pick}$. As described, this algorithm can then be used to  find a projection of $S$ w.r.t. $Y$. In the algorithm we use the method \Call{Project}{$S',Y'$} as a function that returns a projection of the (in)equality system $S'$ w.r.t. the set of variables $Y'\subseteq\VAR(S')$. This method uses preprocessing, Gauss- and FM-elimination as previously described. The method is described later in Algorithm~\ref{alg:project} in Chapter~\ref{sec:implementation}. 
+Below in Algorithm~\ref{alg:solve} we present an algorithm for producing the system $\mathfrak{E}^l_i$ according to the definition in \eqref{eq:mathfrakE} for some choice-function $\mathit{pick}$. As described, this algorithm can then be used to  find a projection of $S$ w.r.t. $Y$. In the algorithm we use the method \Call{Project}{$S',Y'$} as a function that returns a projection of the (in)equality system $S'$ w.r.t. the set of variables $Y'\subseteq\VAR(S')$. This method uses preprocessing, Gauss- and FM-elimination as previously described in Algorithm~\ref{alg:project}. 
 
 \begin{algorithm}\caption{Projecting the variables $Y$ from an (in)equality system $S$ by decomposing it.
 $\mathbb{X}=(X_1,\ldots, X_{k^0})$ is a list of disjoint subsets of $\VAR(S)$, and 

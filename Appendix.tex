@@ -261,20 +261,20 @@ Thus $(\ve{r},\ve{v})$ satisfies $\mathit{Def}(z^l_{c,i})$ for any $1\leq i\leq 
 That is, $\ve{r}\in\proj_{Z^l}\Big(\feas\big(\{c^l_{decp}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\}\big)\Big)$.
 \\\\
 On the other hand, assume that 
-$\ve{r}\in \proj_{Z^l}(\feas(\{c^l_{decp}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\}))$. Since $\{c^l_{decp}\}\cup\bigcup_{1\leq i\leq k^l}\{\mi{Def}(z^l_{c,i})\}$ is a system over $X_\ttt\cup \bigcup_{1\leq i\leq k^l}\{z^l_{c,i}\}\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$, $\ve{r}$ defines values for the variables in $X_\ttt\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$, so let 
+$\ve{r}\in \proj_{Z^l}\Big(\feas\big(\{c^l_{decp}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\}\big)\Big)$. Since $\{c^l_{decp}\}\cup\bigcup_{1\leq i\leq k^l}\{\mi{Def}(z^l_{c,i})\}$ is a system over $X_\ttt\cup \bigcup_{1\leq i\leq k^l}\{z^l_{c,i}\}\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$, $\ve{r}$ defines values for the variables in $X_\ttt\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$, so let 
 $r_x$ be the value of $x$ in $\ve{r}$ for all $x\in X_\ttt\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$.
 
-Then there exists values for the variables in $Z^l$, $\ve{u}$, such that $(\ve{r},\ve{u})$ satisfies $c^l_{decp}$ and $\mathit{Def}(z^l_{c,i})$ for all $1\leq i\leq k^l$. Hence we have for all $1\leq i \leq k^l$ that $-u_{z^l_{c,i}}+\sum_{j\in P^l_i}r_{z^{l-1}_{c,j}} = 0$, where $u_{z^l_{c,i}}$ is the value for $z^l_{c,i}$ in $\ve{u}$. 
+Then there exists values for the variables in $Z^l$, $\ve{u}$, such that $(\ve{r},\ve{u})$ satisfies $c^l_{decp}$ and $\mi{Def}(z^l_{c,i})$ for all $1\leq i\leq k^l$. Hence we have for all $1\leq i \leq k^l$ that $-u_{z^l_{c,i}}+\sum_{j\in P^l_i}r_{z^{l-1}_{c,j}} = 0$, where $u_{z^l_{c,i}}$ is the value for $z^l_{c,i}$ in $\ve{u}$. 
 
 Now consider $\ve{r}$ applied to $c^{l-1}_{decp}$, which is an (in)equality over $X_\ttt\cup\bigcup_{1\leq j\leq k^{l-1}}\{z^{l-1}_{c,j}\}$:
 \begin{align*}
-(\sum_{1\leq i \leq k^{l-1}}r_{z^{l-1}_{c,i}}) + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x
-&= (\sum_{1\leq i \leq k^l}\sum_{j\in P^l_i}r_{z^{l-1}_{c,i}}) + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x\\
-&= (\sum_{1\leq i \leq k^{l}}u_{z^{l}_{c,i}}) + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x\\
-&\odot_c \rhs(c),
+\sum_{1\leq i \leq k^{l-1}}r_{z^{l-1}_{c,i}} + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x
+&= \sum_{1\leq i \leq k^l}(\sum_{j\in P^l_i}r_{z^{l-1}_{c,i}}) + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x\\
+&= \sum_{1\leq i \leq k^{l}}u_{z^{l}_{c,i}} + \sum_{x\in X_\ttt}\coef(x,c)\cdot r_x\\
+&\odot_{c^l_{decp}} \rhs(c^l_{decp}),
 \end{align*}
 where the last (in)equality holds because $c^l_{decp}$ is satisfied by $(\ve{r},\ve{u})$. 
-Thus $\ve{r}$ satisfies $c^{l-1}_{decp}$, and we have shown \eqref{eq:step}.
+Thus $\ve{r}$ satisfies $c^{l-1}_{decp}$ since $\odot_{c^{l-1}_{decp}}=\odot_{c^l_{decp}}$ and $\rhs(c^{l-1}_{decp})=\rhs(c^l_{decp})$. Hence we have shown \eqref{eq:step}.
 \\\\
 Let $V = VAR(S^l_\ttt\cup\bigcup_{1\leq i\leq k^l} S^l_i) = X_\ttt\cup Z^l \cup Z^{l-1}$. Now the statement in the lemma follows since
 \begin{align*}
@@ -282,12 +282,12 @@ Let $V = VAR(S^l_\ttt\cup\bigcup_{1\leq i\leq k^l} S^l_i) = X_\ttt\cup Z^l \cup 
 &=\proj_{Z^l}\Big(\feas\big((S^l_\ttt)_V \cup\bigcup_{1\leq i\leq k^l}(S^l_i)_V\big)\Big)\\
 &=\proj_{Z^l}\Big(\feas\big(\bigcup_{c\in S^0_\ttt}(\{c_{decp}^{l}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\})_V\big)\Big)\\
 &\overset{1}= \bigcap_{c\in S^0_\ttt}\proj_{Z^l}\Big(\feas\big((\{c_{decp}^{l}\}\cup\bigcup_{1\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\})_V\big)\Big)\\
-&\overset{2}= \bigcap_{c\in S^0_\ttt}\feas((c_{decp}^{l-1})_{V\setminus Z^l})\\
-&= \feas(\bigcup_{c\in S^0_\ttt}\{(c_{decp}^{l-1})_{V\setminus Z^l}\})
-= \feas((\bigcup_{c\in S^0_\ttt}\{c_{decp}^{l-1}\})_{V\setminus Z^l})\\
+&\overset{2}= \bigcap_{c\in S^0_\ttt}\feas\big((c_{decp}^{l-1})_{V\setminus Z^l}\big)\\
+&= \feas\big(\bigcup_{c\in S^0_\ttt}\{(c_{decp}^{l-1})_{V\setminus Z^l}\}\big)
+= \feas\big((\bigcup_{c\in S^0_\ttt}\{c_{decp}^{l-1}\})_{V\setminus Z^l}\big)\\
 &\overset{3}= \feas(S^{l-1}_\ttt).
 \end{align*}
-1 follows since from Lemma~\ref{lm:projection} item~\ref{lm:1.1} since $\var(\{c^l_{decp}\}\cup\bigcup_{i\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\})\cap\var(\{c'^l_{decp}\}\cup\bigcup_{i\leq i\leq k^l}\{\mathit{Def}(z^l_{c',i})\})=\emptyset$ for $c,c'\in S^0_\texttt{t}$ where $c\neq c'$, 2 follows from Lemma~\ref{lm:projection} item~\ref{lm:1.3}and the statement proven above, and 3 follows since $\VAR(S^{l-1}_\ttt) = X_\ttt\cup Z^{l-1} = V\setminus Z^l$. 
+1 follows since from Lemma~\ref{lm:projection} item~\ref{lm:1.1} since $\var(\{c^l_{decp}\}\cup\bigcup_{i\leq i\leq k^l}\{\mathit{Def}(z^l_{c,i})\})\cap\var(\{c'^l_{decp}\}\cup\bigcup_{i\leq i\leq k^l}\{\mathit{Def}(z^l_{c',i})\})=\emptyset$ for $c,c'\in S^0_\texttt{t}$ where $c\neq c'$, 2 follows from Lemma~\ref{lm:projection} item~\ref{lm:1.3} and \eqref{eq:step} proven above, and 3 follows since $\VAR(S^{l-1}_\ttt) = X_\ttt\cup Z^{l-1} = V\setminus Z^l$. 
 \end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -295,7 +295,7 @@ Let $V = VAR(S^l_\ttt\cup\bigcup_{1\leq i\leq k^l} S^l_i) = X_\ttt\cup Z^l \cup 
 \begin{proof}
 We show by induction on $0\leq l\leq K$ that 
 \begin{equation}\label{claim}
-\bigcup_{1\leq i \leq k^l}\mathfrak{S}^{l}_1 = \bigcup_{1\leq i\leq k^0}S^0_i\cup\ldots\cup\bigcup_{1\leq i\leq k^l} S^l_i 
+\bigcup_{1\leq i \leq k^l}\mathfrak{S}^{l}_i = \bigcup_{1\leq i\leq k^0}S^0_i\cup\ldots\cup\bigcup_{1\leq i\leq k^l} S^l_i 
 \end{equation}
 For $l=0$ we have by definition that $S^0_i=\mathfrak{S}^0_i$ for all $1\leq i\leq k^0$, so $\bigcup_{1\leq i\leq k^0}S^0_i = \bigcup_{1\leq i\leq k^0}\mathfrak{S}^0_i$. Thus \eqref{claim} holds.
 
@@ -315,7 +315,7 @@ Then
 \end{align*}
 Thus \eqref{claim} also holds for $l=K$, which means that 
 \[
-\mathfrak{S}^{K+1}_1 = S^{K}_\texttt{t} \cup\bigcup_{1\leq j\leq k^K}\mathfrak{S}^K_j =
+\mathfrak{S}^{K+1}_1 = S^{K+1}_1 \cup\bigcup_{j\in P^{K+1}_1}\mathfrak{S}^K_j = S^{K}_\texttt{t} \cup\bigcup_{1\leq j\leq k^K}\mathfrak{S}^K_j =
 S^K_\texttt{t}\cup\bigcup_{1\leq i\leq k^0}S^0_i\cup\ldots\cup\bigcup_{1\leq i\leq k^K} S^K_i.
 \]
 \end{proof}
@@ -345,7 +345,7 @@ For $0<l\leq K$ we assume that \eqref{prop3} holds for all $0\leq l'<l$. For eas
 &\quad=\proj_{\mathbf{Z}}\Big(\feas\big(S^{l-1}_\ttt\cup\bigcup_{0\leq m\leq l-1}\bigcup_{1\leq i\leq k^m} S^m_i\big)\Big)\\
 &\quad\overset{\text{IH}}=\proj_{Y}(S).
 \end{align*}
-Above, $*$ follows from and Lemma~\ref{lm:projection} item \ref{lm:1.2} since $\var((S^m_i)_X)\cap Z^l = \emptyset$ for all $m\leq l-1$ and $0\leq i\leq k^m$.
+Above, $*$ follows from Lemma~\ref{lm:projection} item \ref{lm:1.2} since $\var((S^m_i)_X)\cap Z^l = \emptyset$ for all $m\leq l-1$ and $0\leq i\leq k^m$.
 By the principle of mathematical induction, \eqref{prop3} then holds for all $l\leq K$. 
 \end{proof}
 
@@ -368,16 +368,16 @@ Let $0\leq i\leq k^l$ be arbitrary. In the following we let $\mathbf{Z} = Z^{l-2
 &\quad=\proj_{Z^{l-1}\cup\mathbf{Z}}\big(\feas(S^l_i\cup\bigcup_{j\in P^l_i}\mathfrak{S}^{l-1}_j)\big) & \text{def. of }\mathfrak{S}^l_i\\
 &\quad= \proj_{Z^{l-1}}\Big(\proj_{\mathbf{Z}}\Big(\feas\big((S^l_i)_X\cup\bigcup_{j\in P^l_i}(\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)\\
 %&\quad= \proj_{Z^{l-1}}\Big(\proj_{\mathbf{Z}}\Big(\feas\big((S^l_i)_X\big)\cap\bigcap_{j\in P^l_i}\feas\big((\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)\\
-&\quad=\proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\big)\cap\proj_{\mathbf{Z}}\Big(\feas\big(\bigcup_{j\in P^l_j}(\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)
+&\quad=\proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\big)\cap\proj_{\mathbf{Z}}\Big(\feas\big(\bigcup_{j\in P^l_i}(\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)
 &\substack{\text{Lemma~\ref{lm:projection} item \ref{lm:1.2}},\\\var((S^l_i)_X)\cap \mathbf{Z}= \emptyset}\\ 
-&\quad= \proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\big)\cap\bigcap_{j\in P^l_j}\proj_{\mathbf{Z}}\Big(\feas\big((\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)
+&\quad= \proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\big)\cap\bigcap_{j\in P^l_i}\proj_{\mathbf{Z}}\Big(\feas\big((\mathfrak{S}^{l-1}_j)_X\big)\Big)\Big)
 &\substack{\text{Lemma~\ref{lm:projection} item \ref{lm:1.1}},\\\var((\mathfrak{S}^{l-1}_{m})_X)\cap\var((\mathfrak{S}^{l-1}_{m'})_X)=\emptyset\\\text{ for } m\neq m'}\\
-&\quad \overset{\text{IH}}= \proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\big)\cap\bigcap_{j\in P^l_i}\feas\big((\mathfrak{E}^{l-1}_j)_{X\setminus \mathbf{Z}}\big)\Big)
+&\quad = \proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\big)\cap\bigcap_{j\in P^l_i}\feas\big((\mathfrak{E}^{l-1}_j)_{X\setminus \mathbf{Z}}\big)\Big)
 &\substack{\text{Lemma~\ref{lm:projection} item \ref{lm:1.3}},\\\text{Induction hypothesis}}\\
 &\quad = \proj_{Z^{l-1}}\Big(\feas\big((S^l_i)_{X\setminus\mathbf{Z}}\cup\bigcup_{j\in P^l_i}(\mathfrak{E}^{l-1}_j)_{X\setminus \mathbf{Z}}\big)\Big)\\
 &\quad = \proj_{Z^{l-1}}\Big(\feas\big((S^l_i\cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j)_{X\setminus \mathbf{Z}}\big)\Big)\\
 &\quad = \proj_{Z^{l-1}}\Big(\feas\big(S^l_i\cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j\big)\Big)&\text{See below}\\
-&\quad = \feas(\mathfrak{E}^l_i)&\mathfrak{E}^l_i\in \prs_{Z^{l-1}}(S^l_i\cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j)
+&\quad = \feas(\mathfrak{E}^l_i).&\mathfrak{E}^l_i\in \prs_{Z^{l-1}}(S^l_i\cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j)
 \end{align*}
 The second to last equality above holds because $\VAR(S^l_i \cup\bigcup_{j\in P^l_i}\mathfrak{E}^{l-1}_j )= X\setminus\mathbf{Z}$ which is proven below.
 Thus, \eqref{prop2} holds for $l$, and by the principle of mathematical induction it follows that \eqref{prop2} holds for $K+1$.
@@ -392,8 +392,8 @@ For $l = 1$, we have for an arbitrary $1\leq i\leq k^1$ that
 \VAR(S^1_i \cup\bigcup_{j\in P^1_i}\mathfrak{E}^0_j) 
 & = \VAR(S^1_i) \cup\bigcup_{j\in P^1_i}\VAR(\mathfrak{E}^0_j) \\
 & = \VAR(S^1_i) \cup\bigcup_{j\in P^1_i}(\VAR(S^0_j)\setminus Y) &\mathfrak{E}^0_j\in\prs_Y(S^0_j)\text{ by def.}\\
-& = (\VAR(S^1_i) \cup\bigcup_{j\in P^1_i}\VAR(S^0_j))\setminus Y & \VAR(S^1_i) \cap Y = \emptyset\\  
-& = \VAR(S^1_i \cup\bigcup_{j\in P^1_i}S^0_j)\setminus Y\\  
+& = \big(\VAR(S^1_i) \cup\bigcup_{j\in P^1_i}\VAR(S^0_j)\big)\setminus Y & \VAR(S^1_i) \cap Y = \emptyset\\  
+& = \VAR\big(S^1_i \cup\bigcup_{j\in P^1_i}S^0_j\big)\setminus Y\\  
 & = \VAR(\mathfrak{S}^1_i)\setminus Y & \text{def. of } \mathfrak{S}^1_i\\  
 & = \VAR(\mathfrak{S}^l_i)\setminus (Y\cup\bigcup_{0\leq m\leq l-1} Z^m).
 \end{align*}

@@ -36,9 +36,9 @@ We also notice that the denser the system is, the more it will grow.
 It should, however, also be emphasized that not all inequalities in a succeeding system are necessarily non-redundant. In fact, the
 number of non-redundant inequalities can only grow in single exponential \cite{Monniaux10}.
 %
-\begin{algorithmic}
-\begin{algorithm}\caption{Eliminating variables from an inequality system $S$ using Fourier-Motzkin-elimination.}
-\label{alg:FMBasic}
+\begin{algorithm}
+\caption{Eliminating variables from an inequality system $S$ using Fourier-Motzkin-elimination.}\label{alg:FMBasic}
+\begin{algorithmic}[1]
 \Function{FM-Elim}{Inequality system $S$, variables to eliminate $Y\subseteq \VAR(S)$}
 	\State  $S'\gets S$, $Y'\gets Y$
 	\While{ $Y'\neq \emptyset$ }
@@ -48,7 +48,7 @@ number of non-redundant inequalities can only grow in single exponential \cite{M
 	\EndWhile
 	\State \Return $S'$
 \EndFunction
-\State
+\Statex
 \Function{FM-ElimVar}{Inequality system $S$, variable to eliminate $x\in var(S)$}
 \State Divide $S$ into $\Pos_S(x)$, $\Neg_S(x)$ and $\mathit{Zero}_S(x)$
 \State $S'\gets \set{c_{\VAR(S)\setminus\{x\}}}{c\in\mathit{Zero}_S(x)}$ 
@@ -59,8 +59,8 @@ number of non-redundant inequalities can only grow in single exponential \cite{M
 \EndFor
 \State \Return $S'$
 \EndFunction
-\end{algorithm}
 \end{algorithmic}
+\end{algorithm}
 %
 The function \Call{ChooseVariableToDelete}{} in Algorithm~\ref{alg:FMBasic} is a heuristic to determine which variable among the ones needed to be eliminated that should be eliminated first. In principle, there are many choices for heuristics, but the most commonly used heurisitic is the greedy heuristic that aims at minimizing the size of the inequality system in the next step \cite{duffin74}. This is easy to calculate from the current system since the increase in size only depends on the size of the sets $\Pos_S$ and $\Neg_S$ for the variable in question. We have also chosen this heuristic, that is, the function \Call{ChooseVariableToDelete}{$Y,S$} returns 
 \[
@@ -90,8 +90,8 @@ corresponds to scaling $c'$ and $c$ with $\frac{1}{|\coef(x,c')|}$ and $\frac{-\
 In our method, we will define auxiliary variables (that should not be eliminated) and we will therefore have a number of equalities which we will use to make Gauss-elimination. The pseudocode for this step is given in Algorithm~\ref{alg:Gauss}.
 %
 \begin{algorithm}
-\begin{algorithmic}\caption{Eliminating variables from an (in)equality system $S$ using Gauss-elimination.}
-\label{alg:Gauss}
+\caption{Eliminating variables from an (in)equality system $S$ using Gauss-elimination.}\label{alg:Gauss}
+\begin{algorithmic}[1]
 \Function{Gauss-Elim}{(In)equality system $S$, variables to be eliminated $Y\subseteq \VAR(S)$}
 \State $S'\gets S$
 \While{$Y\cap \var(\eqs(S')) \neq \emptyset$}
@@ -99,7 +99,7 @@ In our method, we will define auxiliary variables (that should not be eliminated
 	\State $S'\gets \Call{Gauss-ElimVar}{S', c, x}$
 \EndWhile
 \State\Return $S'$
-\State
+\Statex
 \Function{Gauss-ElimVar}{System $S$, equality $c$, variable $x\in \var(c)$}
 	\State $S'\gets \emptyset$
 	\State Remove $c$ from $S$
@@ -191,9 +191,10 @@ That is, if $\coef(x,c)>0$ then $x\leq \frac{\rhs(c)-\mathit{low}_x(c)}{\coef(x,
 This step is performed as in Algorithm~\ref{alg:bounds}. 
 We say that $x\in\var(c)$ has an appropriate high bound, if $\UB(x)$ exists when $\coef(x,c)>0$, and $\lb(x)$ exists when $\coef(x,c)<0$. Likewise, $x\in\var(c)$ has an appropriate low bounds if $\lb(x)$ exists when $\coef(x,c)>0$, and $\UB(x)$ exists when $\coef(x,c)<0$.
 
-\begin{algorithm}\caption{Removing (in)equalities that are implied due to the bounds of its variables, and updating bounds of variables implied by the right-hand-side of the (in)equality (and the bound of the other variables).}
+\begin{algorithm}
+\caption{Removing (in)equalities that are implied due to the bounds of its variables, and updating bounds of variables implied by the right-hand-side of the (in)equality (and the bound of the other variables).}
 \label{alg:bounds} 
-\begin{algorithmic}
+\begin{algorithmic}[1]
 \Function{ForcedByBounds}{(In)equality system $S$}
 \State $S'\gets S$
 \For{$c \in S'$}
@@ -215,7 +216,7 @@ We say that $x\in\var(c)$ has an appropriate high bound, if $\UB(x)$ exists when
 \EndFor
 \State\Return $S'$
 \EndFunction
-\State
+\Statex
 \Function{RedundantDueToBounds?}{$S$, $c\in S$}
 	\State $red \gets  \false$, $Subst \gets \emptyset$
 	\State $high\gets \infty$, $low\gets -\infty$ 
@@ -242,7 +243,7 @@ We say that $x\in\var(c)$ has an appropriate high bound, if $\UB(x)$ exists when
 	\EndIf
 	\State\Return $(red, Subst)$
 \EndFunction
-\State
+\Statex
 \Function{ImpliedBounds}{$S$, $c \in S$}
 	\State $\mi{UBs}\gets \emptyset$, $\mi{lbs}\gets\emptyset$
 	\For{ $x \in \var(c)$ }
@@ -354,7 +355,7 @@ We implement the removal of less strict inequalities in a similar way to how the
 The overall preprocessing step then consists of doing all the above mentioned steps repeatedly in a cycle, as long as ``something happens'' in a cycle, that is, an (in)equality or variable has been removed or substituted with a value, or a bound has been updated.
 %\marginpar{I could implement it as in \cite{andersen95}}
 \begin{algorithm}\caption{Preprocessing an (in)equality system $S$. The variables in $\VAR(S)\setminus Y$ should be kept.}\label{alg:prep}
-\begin{algorithmic}
+\begin{algorithmic}[1]
 \Function{Preprocess}{(In)equality system $S$, variables $Y\subseteq \VAR(S)$}
 \State $S'\gets S$
 \Do
@@ -382,12 +383,12 @@ Theoretically, all redundant inequalities can be removed from an (in)equality sy
 We notice that if $c$ is a non-redundant inequality in $S$ that lies in $\mathit{Zero}_S(x)$ for some variable $x$, then $c_{\VAR(S)\setminus\{x\}}$ is also a non-redundant inequality in $S'$ for all $S'\in\prs_{\{x\}}(S)$.  Therefore, assuming that we have already removed redundant inequalities from the system $S$, it is therefore only necessary to check all the new inequalities being added to the system after each FM-elimination.
 
 \begin{algorithm}
+\caption{Removing redundant inequalities from an (in)equality system $S$. The maximum value in line~\ref{line:maxx} can be calculated with an lp-solver}\label{alg:RedRem}
 \begin{algorithmic}[1]
-\caption{Removing redundant inequalities from an (in)equality system $S$. The maximum value in line~4 can be calculated with an lp-solver}\label{alg:RedRem}
 \Function{RemoveRedundantIneqs}{(In)equality system $S$, Inequalities to be checked $C\subseteq S\setminus\eqs(S)$}
 	\State $S'\gets S$
 	\ForAll{$c\in C$}
-		\If{$\max\set{\vea(c)\cdot\ve{r}}{\ve{r}\in \feas(S'\setminus\{c\})}\leq \rhs(c)$} %%Can't make label work correctly
+		\If{$\max\set{\vea(c)\cdot\ve{r}}{\ve{r}\in \feas(S'\setminus\{c\})}\leq \rhs(c)$}\label{line:maxx} %%Can't make label work correctly
 			\State Remove $c$ from $S'$
 		\EndIf
 	\EndFor

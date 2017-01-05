@@ -2,7 +2,7 @@
 \subsection{Improved redundancy checks}
 \subsubsection{Taking advantage of data's uncertainty}\label{sec:uncertainty} 
 It is not uncommon that the coefficients and right-hand-sides in the considered (in)equality system comes from approximations and/or predictions of certain circumstances, and hence the exact vertices of the feasible area is not given with high accuracy. We will therefore allow slight discrepancies between the corners of the final solution space given by our algorithm and the actual projection. 
-When calculating the maximum in line~4 in Algorithm~\ref{alg:RedRem} we will therefore allow the maximum to be within a given relative $\epsilon$. That is, the condition in line~4 is replaced with the following:
+When calculating the maximum in line~\ref{line:maxx} in Algorithm~\ref{alg:RedRem} we will therefore allow the maximum to be within a given relative $\epsilon$. That is, the condition in line~\ref{line:maxx} is replaced with the following:
 \begin{equation}\label{eq:almostRed}
 \max\set{\vea(c)\cdot\ve{r}}{\ve{r}\in \feas(S\setminus\{c\})}\leq \rhs(c) + \epsilon\cdot |\rhs(c)|.
 \end{equation}
@@ -29,10 +29,11 @@ The checkers also check and report on inequalities for which the optimization of
 Finally we also reexamine inequalities, for which the lp-solver was not able to solve the optimization of its left-hand-side.
 
 The pseudocode for the redundancy checkers is listed in Algorithm~\ref{alg:checker}, and the pseudocode for the manager is listed in Algorithm~\ref{alg:manager}. 
-When the manager receives results from the checkers (via calls to \Call{ManageResult}{} in line~24 in Algorithm~\ref{alg:manager}), it finishes handling one call before handling the next call. %For the parallel checkers, as explained it is important to only check for strict redundancy (well, it is important that only strictly redundant inequalities are removed since otherwise the result can be incorrect due to two parallel checkers removing/reporting each their ``almost redundant'' inequality redundant). When the inequalities are checked sequentially, we can also remove ``almost redundant'' inequalities.
+When the manager receives results from the checkers (via calls to \Call{ManageResult}{} in line~\ref{line:manageResult} in Algorithm~\ref{alg:manager}), it finishes handling one call before handling the next call. %For the parallel checkers, as explained it is important to only check for strict redundancy (well, it is important that only strictly redundant inequalities are removed since otherwise the result can be incorrect due to two parallel checkers removing/reporting each their ``almost redundant'' inequality redundant). When the inequalities are checked sequentially, we can also remove ``almost redundant'' inequalities.
 
 \begin{algorithm}[htbp]
-\begin{algorithmic}\caption{Initializing and running a redundancy checker. A checker can either check for true redundancy (used when doing parallel redundancy checks) or not, in which case it checks for ``almost redundancy'' (for doing sequential redundancy checks).}\label{alg:checker}
+\caption{Initializing and running a redundancy checker. A checker can either check for true redundancy (used when doing concurrent redundancy checks) or not, in which case it checks for ``almost redundancy'' (for doing sequential redundancy checks).}\label{alg:checker}
+\begin{algorithmic}[1]
 \Function{Solve}{Manager $m$, (In)equality system $S$, $c\in S$, boolean $\mi{truely}$}
 	\State $S'\gets S$, $c'\gets c$, $\mathit{reds}\gets \emptyset$
 	\While{$c' \neq $ \nul}
@@ -41,7 +42,6 @@ When the manager receives results from the checkers (via calls to \Call{ManageRe
 		\State Inspect solution:
 		\Indent
 			\State $\mathit{red}\gets \false, \mathit{resolve}\gets \false$
-%			\State $\mathit{goodK} \gets \Call{GetConditionNumber}{\null}\leq \mathcal{K}$
 			\State $\kappa\gets \Call{GetConditionNumber}{\null}$
 			\If{$\mathit{truely}$}
 				\State $\mi{red} \gets \Call{IsTruelyRedundant?}{\mathit{max}, \rhs(c')}$ and $\kappa\leq \mathcal{K}$
@@ -54,19 +54,15 @@ When the manager receives results from the checkers (via calls to \Call{ManageRe
 		\If{$\neg \mathit{red}$}
 			\State Add $c'$ to $S'$
 		\EndIf
-%		\State \textbf{synchronized} access to \textbf{manager} 
 		\State $(c', \mi{reds})\gets m.\Call{ManageResult}{c', \mathit{red}, \mathit{resolve}}$
-%		\StateInd $c \gets \Call{NextIneqToCheck}{\null}$
-%		\StateInd $\mathit{redundants} \gets \Call{GetRedundants}{\null}$
-%		\State \textbf{end synchronized}
 	\EndWhile
-	\Return
+	\State\Return
 \EndFunction
-\State
+\Statex
 \Function{IsTruelyRedundant?}{$\mathit{max}, \mathit{rhs}$}
 	\State\Return $\mathit{max} \leq \mathit{rhs}$
 \EndFunction
-\State
+\Statex
 \Function{IsAlmostRedundant?}{$\mathit{max}, \mathit{rhs}$}
 		\State\Return ( $\mathit{rhs} = 0$ and $\mathit{max} \leq \epsilon'$) or 
 				$\mathit{max} \leq \mathit{rhs} + \epsilon\cdot |\mathit{rhs}|$
@@ -77,19 +73,19 @@ When the manager receives results from the checkers (via calls to \Call{ManageRe
 We notice that the inequalities that should be checked for redundancy is a subset of (in)equalities in $S$. Essentially, these should be the new inequalities added to the system after each FM-elimination as described earlier. However, the function is implemented such that it is also possible to check the whole system for redundant inequalities.
 
 \begin{algorithm}[htbp]
-\begin{algorithmic}[1]\caption{Managing the redundancy checkers. First a parallel redundancy check is performed, followed by a sequential redundancy check. It is assumed that $C'$, $\mathit{reds}$ and $\mathit{agains}$ can be accessed by any of the manager's functions in this algorithm.}\label{alg:manager}
-\Function{RemoveRedundancy}{(In)equality system $S$, inequalities $C\subseteq S\setminus\eqs(S)$, number of checkers $k$}
-	\State $S'\gets S,\; C'\gets C,\; \mathit{reds} \gets \emptyset,\; \mathit{agains} \gets \emptyset$, $\mi{checkers} \gets \emptyset$ 		
+\caption{Managing the redundancy checkers. First a concurrent redundancy check is performed, followed by a sequential redundancy check. It is assumed that $C'$, $\mathit{reds}$ and $\mathit{resolves}$ can be accessed by any of the manager's functions in this algorithm.}\label{alg:manager}
+\begin{algorithmic}[1]
+\Function{RemoveRedundancy}{System $S$, inequalities $C\subseteq S\setminus\eqs(S)$, number of checkers $k$}
+	\State $S'\gets S,\; C'\gets C,\; \mathit{reds} \gets \emptyset,\; \mathit{resolves} \gets \emptyset$, $\mi{checkers} \gets \emptyset$ 		
 \State Do parallel redundancy check:
 \Indent
-%	\State \Call{Initialize}{$S$, $C$, $k$}
 	\DoPar{ $i\gets 1$ to $\min\{k,|C'|\}$}
 		\State Add new checker $t$ to $\mi{checkers}$
 		\State Call $t.\Call{Solve}{\texttt{this}, S', \textsc{NextIneqToCheck}(), \true}$ 
 	\doParUntil{all checkers in $\mi{checkers}$ have returned}
 \EndIndent
-\State
-\State $S'\gets S'\setminus reds,\; C'\gets \mi{agains},\; \mathit{reds} \gets \emptyset,\; \mathit{agains} \gets \emptyset$
+\Statex
+\State $S'\gets S'\setminus reds,\; C'\gets \mi{resolves},\; \mathit{reds} \gets \emptyset,\; \mathit{resolves} \gets \emptyset$
 \State Do sequential redundancy check:
 \Indent
 	\If{$C'\neq \emptyset$}
@@ -100,7 +96,7 @@ We notice that the inequalities that should be checked for redundancy is a subse
 \EndIndent
 \State \Return $S'\setminus \mi{reds}$ 
 \EndFunction
-\State
+\Statex
 \Function{NextIneqToCheck}{\null}
 		\If{ $C'=\emptyset$ }
 			\State\Return \nul
@@ -110,17 +106,16 @@ We notice that the inequalities that should be checked for redundancy is a subse
 			\State \Return $c$
 		\EndIf
 \EndFunction
-\State
-\Function{ManageResult}{Inequality $c$, boolean $red$, boolean $again$}\label{line:manageResult}
+\Statex
+\Function{ManageResult}{Inequality $c$, boolean $red$, boolean $resolve$}\label{line:manageResult}
 	\If{$red$}
 		\State Add $c$ to $\mathit{reds}$
 	%	\State (Tell all the other checkers that $ie$ is redundant)
-	\ElsIf{$again$}
-			\State Add $c$ to $\mathit{agains}$ 
+	\ElsIf{$resolve$}
+			\State Add $c$ to $\mathit{resolves}$ 
 	\EndIf
 	\State \Return $(\Call{NextIneqToCheck}{\null}, \mi{reds})$
 \EndFunction
-\State
 \end{algorithmic}		
 \end{algorithm}
 %
@@ -144,7 +139,7 @@ Due to the sometimes large number of inequalities that we do not know the redund
 	\State $S'\gets\Call{Gauss-Elim}{S',Y}$\Comment See Algorithm~\ref{alg:Gauss} 
 	\State $S'\gets \Call{FM-Elim*}{S',Y}$\Comment FM-elimination with redundancy removal (see below)
 \EndFunction
-\State
+\Statex
 \Function{FM-Elim*}{$S,Y$}
 	\State  $S'\gets S$, $Y'\gets Y$
 	\While{ $Y'\neq \emptyset$ }
@@ -162,38 +157,36 @@ Due to the sometimes large number of inequalities that we do not know the redund
 \end{algorithm}
 %
 \subsection{Decomposition}\label{sec:decomp}
-Given the theoretical complexity of the Fourier\--Motzkin\--elimination procedure, we might not have great hope of using this to eliminate a large number of variables from a very big (in)equality system, at least not if the values of the (in)equalities are randomly generated.
+Given the theoretical complexity of the Fourier\--Motzkin\--elimination procedure, we might not have great hope of using this to eliminate a large number of variables from a very large (in)equality system, at least not if the values of the (in)equalities are randomly generated.
 %However, we are looking to take advantage of the build-in structure of our problem.
 %
-However, given an (in)equality system coming from a natural occurring problem, it is quite natural that the constraints have a certain structure, known as a \emph{block structure} \cite{williams}, where groups of constraints are ``local'' to each their specific subdomain of the problem, %; in the problem we consider this could for example be the locations or bays of the ship, since these naturally define a structure over which the constraints are modeled.
-while other ``global'' or ``transverse'' constraints involve many or all of the local subdomains. We will in the following assume that the given problem have a block structure and exploit this fact. %cations as for example 
-%the equality defining the type variable or the hydrostatic constraints.
+However, given an (in)equality system coming from a natural occurring problem, it is common that the constraints are \emph{block structured} \cite{williams}, where groups of constraints are ``local'' for each subdomain of the problem, while other ``global'' or ``transverse'' constraints involve many or all of the local subdomains (see Figure~\ref{fig:decomp1}). We will in the following assume that the given problem has a block structure and exploit this fact. 
 
 Given a problem with block structure, the dense, ``transverse'' (in)equalities are problematic for Fourier-Motzkin-elimination, especially when they use variables that should not be eliminated, and particularly when they are equalities. 
-Then every time a variable in a transverse equality is eliminated, all the ``local'' (in)equalities using the variable \emph{will be combined} with one of the two inequalities corresponding to the transverse equality. The result is that we get a large number of inequalities using all the variables of the large transverse equality \emph{and} the variables from the local (in)equalities. Thus, not only do we increase the size of the problem, we also make it (much) more dense, both of which qualities make the rest of the elimination process more time-consuming, but also increases the time spend on finding redundant inequalities.
+Every time a variable in a transverse equality is eliminated, all the ``local'' (in)equalities using the variable \emph{will be combined} with one of the two inequalities corresponding to the transverse equality. The result is that we get a large number of inequalities using all the variables of the large transverse equality \emph{and} the variables from the local (in)equalities. Thus, not only do we increase the size of the problem, we also make it (much) more dense, both making the rest of the elimination process more time-consuming, and also increasing the time spend on finding redundant inequalities.
 %
-{It would be helpful if we could avoid this.}
+{Below we show how to avoid this.}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Separating (in)equality system}
-If possible, it would be an advantage to be able to separate our (in)equality system into a (preferably large) number of smaller (in)equality systems that have ``nothing in common'', meaning that there is no overlap between the sets of variables being used in the different subsystem. If this can be done, we can then solve each subsystem separately in parallel after which the resulting systems can be combined (see Lemma~\ref{lm:projection} item \ref{lm:1.1}). As long as each subsystem is sufficiently small (such that it is can be projected in ``reasonable'' time) this may turn an insurmountable large problem into a projectable one. 
-However, this is seldom possible to do. Nonetheless, using the block structure to decompose the system into smaller subsystems with only little interaction by separating the system's (in)equalities can still be useful. 
- 
-We therefore consider $k^0$ disjoint subsets of $\VAR(S)$ - $X_1, X_2,\ldots, X_{k^0}$ - and let $X_{\texttt{t}}\odef \VAR(S)\setminus \var(\cup_{1\leq i\leq k^0}X_i)$. For each $i$ we define $S_i$ to be the (in)equality system that only uses variables in $X_i$, i.e. $S_i \odef \set{c\in S}{\var(c)\subseteq X_i}$, and we let $S_\texttt{t} = S\setminus \cup_{1\leq i \leq k_0}S_i$ be the system consisting of the rest of the (in)equalities. 
-
-The result is that we have divided the system into $k^0$ \emph{local} parts with disjoint sets of used variables, and a \emph{transverse} part that contains (in)equalities using variables from more than one of the other local parts. 
-
-Our (in)equality system can thus be illustrated as in Figure~\ref{fig:decomp1}.
 \begin{figure}
 	\centering
-		\includegraphics{figures/decomp1B.pdf}
-	\caption{A separation of the (in)equalities of an (in)equality system into six local parts and a transverse part. 
+		\includegraphics{figures/decomp1B2.pdf}
+	\caption{Separation of the (in)equalities of an (in)equality system into local parts and a transverse part. 
 	The figure shows the coefficient matrix for the system, where non-zero sections have been colored black.}
 	\label{fig:decomp1}
 \end{figure}
 
-It should be noticed that in general, this can be done in many ways, but in our case - and in many other natural occurring cases - there is a natural way in which the local parts/local variables present themselves. For our particular case, many of the constraints are naturally concentrated around stowage of each location while a few constraints traverse several locations, such as the hydrostatic constraints or the constraint defining the type variable.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Separating the (in)equality system}
+If possible, it would be an advantage to be able to separate our (in)equality system into a (preferably large) number of smaller (in)equality systems that have ``nothing in common'', meaning that there is no overlap between the sets of variables being used in the different subsystem. If this can be done, we can then solve each subsystem separately in parallel after which the resulting systems can be combined (see Lemma~\ref{lm:projection} item \ref{lm:1.1}). As long as each subsystem is sufficiently small (such that it is can be projected in ``reasonable'' time) this may turn an insurmountable large problem into a projectable one. 
+However, this is not always possible to do. Nonetheless, using the block structure to decompose the system into smaller subsystems with only little interaction by separating the system's (in)equalities can still be useful. 
+ 
+We therefore consider $k^0$ disjoint subsets of $\VAR(S)$ - $X_1, X_2,\ldots, X_{k^0}$ - and let $X_{\texttt{t}}\odef \VAR(S)\setminus \var(\cup_{1\leq i\leq k^0}X_i)$. For each $i\in\{1,\ldots, k^0\}$ we define $S_i$ to be the (in)equality system that only uses variables in $X_i$, i.e. $S_i \odef \set{c\in S}{\var(c)\subseteq X_i}$, and we let $S_\texttt{t} = S\setminus \cup_{1\leq i \leq k_0}S_i$ be the system consisting of the rest of the (in)equalities. 
+
+The result is that we have divided the system into $k^0$ \emph{local} parts with disjoint sets of used variables, and a \emph{transverse} part that contains (in)equalities using variables from more than one of the other local parts. 
+
+Our (in)equality system can thus be illustrated as in Figure~\ref{fig:decomp1}.
+
+It should be noticed that in general, this can be done in many ways, but in our case - and in many common cases - there is a natural way in which the local parts/local variables present themselves. %For our particular case, many of the constraints are naturally concentrated around stowage of each location while a few constraints traverse several locations, such as the hydrostatic constraints or the constraint defining the type variable.
    
 We likewise notice that for any (in)equality system, such partitions of variables and (in)equalities will always exist though they might not be very useful in practice; 
 for any $X\subseteq \VAR(S)$, we can make a partition of the (in)equalities as desired, $S = \set{c\in S}{\var(c)\subseteq X}\,\dot\cup \set{c\in S}{\var(c)\not\subseteq X}$.
@@ -230,10 +223,68 @@ S_3 : \left\{ \begin{array}{ll} -x_3 + y_3 &\leq 1\\
 $S_1$, $S_2$ and $S_3$ are ``local'' subsystems only dealing with variables from $\{x_1,y_1\}$, $\{x_2, y_2\}$ and $\{x_3,y_3\}$, respectively. On the other hand, the equality defining $u$, %and $u'$, 
 $\mathit{sum}$, % and $\mi{wSum}$, are 
 is a transverse equality. When eliminating any $x$ or $y$ variable, the system will be added (in)equalities using all variables (except the eliminated one) due to combinations with $\mi{sum}$. % and $\mi{wSum}$.
+\end{example}
 
-The idea, which will be explained formally in the coming sections, is then to introduce auxiliary variables to prevent this immediate mix of variables from $\var(S_1)$, $\var(S_2)$ and $\var(S_3)$ in new inequalities. This is done by defining $u$ as the sum of three auxiliary variables, $z_1$, $z_2$ and$ z_3$, which in turn are defined as the sum of the variables in each respective subsystems. Hence we will look at the (in)equality system $S'$ instead, where $S'$ is the following system.
+\paragraph{Introducing auxiliary variables}
+As previously mentioned it is preferable to perform elimination on a (local) subsystem such that only (in)equalities naturally ``belonging'' to that subsystem are produced, meaning that added (in)equalities uses no variables from other (local) subsystems. 
+This can be achieved by the use of auxiliary variables.
+
+Assume that $c:\sum_{x\in \VAR(c)} \coef(x,c)\cdot x \odot_c \rhs(c)$ belongs to $S_\texttt{t}$.  
+For all $1\leq i \leq k^0$ we then define a variable\footnote{{Formally, we define the value of a variable in $\xx\setminus \VAR(S)$ which we will rename $z^0_{c,i}$, and so forth with all the following, defined variables}.}, $z_{c,i}^{0} \odef \sum_{x\in X_i}  \coef(x,c)\cdot x$, which can be written as an equality over $X_i\cup \{z^0_{c,i}\}$ as
+\begin{equation}\label{eq:z^0_{c,i}}
+\mathit{Def}(z^0_{c,i}): -z_{c,i}^{0} + \sum_{x\in X_i}  \coef(x,c)\cdot x = 0.
+\end{equation}
+Since $\VAR(S) = X_1 \,\dot{\cup}\; \ldots \,\dot{\cup}\; X_{k^0} \,\dot{\cup}\; X_{\texttt{t}}$ and $\coef(x,c)=0$ for $x\in \VAR(S)\setminus \var(c)$, we therefore have that 
+\begin{align*}
+\sum_{x\in \VAR(c)} \coef(x,c)\cdot x  
+&= \sum_{x\in \VAR(S)} \coef(x,c)\cdot x \\
+&= \big(\sum_{1\leq i \leq k^0}\big(\sum_{x\in X_i} \coef(x,c)\cdot x\big)\big) + \sum_{x\in X_{\ttt}}\coef(x,c)\cdot x\\
+&= \big(\sum_{1\leq i\leq k^0}z^0_{c,i}\big)+\sum_{x\in X_\texttt{t}}\coef(x,c)\cdot x,
+\end{align*}
+which means that using the $z^0_{c,i}$-variables, $c$ can be rewritten as an (in)equality over $\cup_{1\leq i\leq k_0}\{z^0_{c,i}\}\cup X_\ttt$ as  
+\begin{equation}\label{transEq}
+c^0_{decp}:\big(\sum_{1\leq i \leq k^0} z_{c,i}^{0}\big) + \sum_{x\in X_\texttt{t}}\coef(x,c)\cdot x \odot_c \rhs(c).
+\end{equation}
+From construction it therefore follows that values for $x\in \VAR(S)$ that satisfies $c$ can be extended with values for all $z^0_{c,i}$ such that $c^0_{decp}$ and all the defining equalities (from \eqref{eq:z^0_{c,i}}) are satisfied, and vice versa, if the latter (in)equalities are all satisfied then satisfying values for the variables in $X$ will also satisfy $c$. That is,
+\begin{equation}\label{eq:projz}
+\feas(c)=\proj_{\cup_{1\leq i\leq k^0}\{z^0_{c,i}\}}\big(\feas(\{c^0_{decp}\}\cup\bigcup_{1\leq i\leq k^0}\{\mi{Def}(z^0_{c,i})\})\big).
+\end{equation}
+Using auxiliary variables for all $c\in S_\texttt{t}$ as above and adding the defining equalities $\mi{Def}(z^0_{c,i})$ to the subsystem where they belong according to their variables, we can divide the (in)equality system $S$ into a number of (in)equality systems, $S^0_1,\ldots, S^0_{k^0}, S^0_\texttt{t}$, 
+as described in the pseudocode below. 
+
+\begin{algorithm}
+\caption{Separating an (in)equality system $S$ according to a list of disjoint sets of variables $\mathbb{X}=(X_1, X_2, \ldots, X_{k^0})$, where each $X_i\subseteq \VAR(S)$}\label{alg:separate}
+\begin{algorithmic}[1]
+\Function{SeparateIneqs}{$S$, $\mathbb{X}=(X_1, X_2, \ldots, X_{k^0})$}
+\State $S_\ttt \gets \set{c\in S}{\var(c)\not\subseteq X_i\text{ for any } i}$
+\For{$i\gets 1$ to $k^0$}
+	\State $S^0_i \gets \set{c_{X_i}}{c\in S, \var(c)\subseteq X_i}$%\set{c_{X_i'}}{c\in S, \var(c)\subseteq X_i}$
+\EndFor
+\State $S^0_\ttt\gets \emptyset$ %empty set of (in)equalities over $X_\ttt^0$
+\ForAll{$c\in S_\ttt$}
+	\For{$i\gets 1$ to $k^0$}
+		\State Add $\mathit{Def}(z^0_{c,i}): -z^{0}_{c,i} + \sum_{x\in X_i} \coef(x,c)\cdot x = 0$ to $S_i^0$
+	\EndFor
+	\State Add $c^0_{decp}: (\sum_{1\leq i\leq k^0} z_{c,i}^0) +\sum_{x\in X_\texttt{t}}\coef(x,c)\cdot x \odot_c \rhs(c)$ to $S^0_\texttt{t}$ 
+\EndFor
+\State\Return ($(S^0_1,\ldots, S^0_{k^0}), S^0_\texttt{t}$)
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+The (in)equality system consisting of the union of the systems $S^0_1,\ldots, S^0_{k^0}, S^0_\texttt{t}$ will be referred to as the \emph{separated system from $S$}, written $\mi{sep}(S)$. This can be illustrated as in Figure~\ref{fig:decomp3}. For ease of notation we let $Z^0 \odef \cup_{1\leq i\leq k^0}\set{z^0_{c,i}}{c\in S_\ttt}$. We notice that for each constructed system $S^0_i$ we have that $\VAR(S^0_i)\subseteq X_i\cup Z^0$ and $\VAR(S^0_t) = X_\ttt \cup Z^0$. 
+
+\begin{figure}[htbp]
+	\centering
+		\includegraphics[scale = 0.8]{figures/decomp3B.pdf}
+	\caption{The separated system from the system in Figure~\ref{fig:decomp1}. Auxiliary variables are used to prevent local constraints from different local parts to instantly ``mix'' when their variables are eliminated. Each system $S^0_i$, however, only corresponds to the system encased in coloured boxes.}
+	\label{fig:decomp3}
+\end{figure}
+%
+\begin{example}\label{ex:2}
+Consider again the (in)equality system $S$ from Example~\ref{ex:1}. As explained, separating $S$ introduces auxiliary variables to prevent the immediate mix of variables from $\var(S_1)$, $\var(S_2)$ and $\var(S_3)$ in new inequalities when any of the variables are eliminated. This is done by defining $u$ as the sum of three auxiliary variables, $z_1$, $z_2$ and$ z_3$, which in turn are defined as the sum of the variables in each respective subsystems. Hence $\mi{sep}(S)$ is the following system.
 \begin{gather*}
-\mathit{sum}^0: -u + z_1 + z_2 + z_3 = 0\\
+\mathit{sum}^0_{decp}: -u + z_1 + z_2 + z_3 = 0\\
 %\mi{wSum}^0&: -u' + z_1' + z_2' + z_3' = 0\\ 
 S_1^0 : \left\{ \begin{array}{ll}-z_1 + x_1 + y_1 &= 0\\
 %																-z_1' + x_1 + 2\cdot y_1 &= 0\\
@@ -278,60 +329,6 @@ from which $z_1$, $z_2$ and $z_3$
 can then be eliminated. %In general, this further improves the runtime of some of the subprocedures in our projection algorithm since each subsystems $S^0_1$, $S^0_2$ and $S^0_3$ will be relatively smaller than the overall system.  
 \end{example}
 
-\paragraph{Introducing auxiliary variables}
-As previously mentioned it is preferable to perform elimination on a (local) subsystem such that only (in)equalities naturally ``belonging'' to that subsystem are produced, meaning that added (in)equalities uses no variables from other (local) subsystems. 
-This can be achieved by the use of auxiliary variables.
-
-Assume that $c:\sum_{x\in \VAR(c)} \coef(x,c)\cdot x \odot_c \rhs(c)$ belongs to $S_\texttt{t}$.  
-For all $1\leq i \leq k^0$ we then define a variable\footnote{{Formally, we define the value of a variable in $\xx\setminus \VAR(S)$ which we will rename $z^0_{c,i}$, and so forth with all the following, defined variables}}, $z_{c,i}^{0} \odef \sum_{x\in X_i}  \coef(x,c)\cdot x$, which can be written as an equality over $X_i\cup \{z^0_{c,i}\}$ as
-\begin{equation}\label{eq:z^0_{c,i}}
-\mathit{Def}(z^0_{c,i}): -z_{c,i}^{0} + \sum_{x\in X_i}  \coef(x,c)\cdot x = 0.
-\end{equation}
-Since $\VAR(S) = X_1 \,\dot{\cup}\; \ldots \,\dot{\cup}\; X_{k^0} \,\dot{\cup}\; X_{\texttt{t}}$ and $\coef(x,c)=0$ for $x\in \VAR(S)\setminus \var(c)$, we therefore have that 
-\begin{align*}
-\sum_{x\in \VAR(c)} \coef(x,c)\cdot x  
-&= \sum_{x\in \VAR(S)} \coef(x,c)\cdot x \\
-&= \big(\sum_{1\leq i \leq k^0}\big(\sum_{x\in X_i} \coef(x,c)\cdot x\big)\big) + \sum_{x\in X_{\ttt}}\coef(x,c)\cdot x\\
-&= \big(\sum_{1\leq i\leq k^0}z^0_{c,i}\big)+\sum_{x\in X_\texttt{t}}\coef(x,c)\cdot x,
-\end{align*}
-which means that using the $z^0_{c,i}$-variables, $c$ can be rewritten as an (in)equality over $\cup_{1\leq i\leq k_0}\{z^0_{c,i}\}\cup X_\ttt$ as  
-\begin{equation}\label{transEq}
-c^0_{decp}:\big(\sum_{1\leq i \leq k^0} z_{c,i}^{0}\big) + \sum_{x\in X_\texttt{t}}\coef(x,c)\cdot x \odot_c \rhs(c).
-\end{equation}
-From construction it therefore follows that values for $x\in \VAR(S)$ that satisfies $c$ can be extended with values for all $z^0_{c,i}$ such that $c^0_{decp}$ and all the defining equalities (from \eqref{eq:z^0_{c,i}}) are satisfied, and vice versa, if the latter (in)equalities are all satisfied then satisfying values for the variables in $X$ will also satisfy $c$. That is,
-\begin{equation}\label{eq:projz}
-\feas(c)=\proj_{\cup_{1\leq i\leq k^0}\{z^0_{c,i}\}}\big(\feas(\{c^0_{decp}\}\cup\bigcup_{1\leq i\leq k^0}\{\mi{Def}(z^0_{c,i})\})\big).
-\end{equation}
-Using auxiliary variables for all $c\in S_\texttt{t}$ as above and adding the defining equalities $\mi{Def}(z^0_{c,i})$ to the subsystem where they belong according to their variables, we can divide the (in)equality system $S$ into a number of (in)equality systems, $S^0_1,\ldots, S^0_{k^0}, S^0_\texttt{t}$, 
-as described in the pseudocode below. 
-
-\begin{algorithm}\caption{Separating an (in)equality system $S$ according to a list of disjoint sets of variables $\mathbb{X}=(X_1, X_2, \ldots, X_{k^0})$, where each $X_i\subseteq \VAR(S)$}\label{alg:separate}
-\begin{algorithmic}
-\Function{SeparateIneqs}{$S$, $\mathbb{X}=(X_1, X_2, \ldots, X_{k^0})$}
-\State $S_\ttt \gets \set{c\in S}{\var(c)\not\subseteq X_i\text{ for any } i}$
-\For{$i\gets 1$ to $k^0$}
-	\State $S^0_i \gets \set{c_{X_i}}{c\in S, \var(c)\subseteq X_i}$%\set{c_{X_i'}}{c\in S, \var(c)\subseteq X_i}$
-\EndFor
-\State $S^0_\ttt\gets \emptyset$ %empty set of (in)equalities over $X_\ttt^0$
-\ForAll{$c\in S_\ttt$}
-	\For{$i\gets 1$ to $k^0$}
-		\State Add $\mathit{Def}(z^0_{c,i}): -z^{0}_{c,i} + \sum_{x\in X_i} \coef(x,c)\cdot x = 0$ to $S_i^0$
-	\EndFor
-	\State Add $c^0_{decp}: (\sum_{1\leq i\leq k^0} z_{c,i}^0) +\sum_{x\in X_\texttt{t}}\coef(x,c)\cdot x \odot_c \rhs(c)$ to $S^0_\texttt{t}$ 
-\EndFor
-\State\Return ($(S^0_1,\ldots, S^0_{k^0}), S^0_\texttt{t}$)
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
-The (in)equality system consisting of the union of the systems $S^0_1,\ldots, S^0_{k^0}, S^0_\texttt{t}$ will be referred to as the \emph{separated system from $S$}, written $\mi{sep}(S)$. This can be illustrated as in Figure~\ref{fig:decomp3}. For ease of notation we let $Z^0 \odef \cup_{1\leq i\leq k^0}\set{z^0_{c,i}}{c\in S_\ttt}$. We notice that for each constructed system $S^0_i$ we have that $\VAR(S^0_i)\subseteq X_i\cup Z^0$ and $\VAR(S^0_t) = X_\ttt \cup Z^0$. 
-
-\begin{figure}[htbp]
-	\centering
-		\includegraphics[scale = 0.8]{figures/decomp3B.pdf}
-	\caption{The separated system from the system in Figure~\ref{fig:decomp1}. Auxiliary variables are used to prevent local constraints from different local parts to instantly ``mix'' when their variables are eliminated. Each system $S^0_i$, however, only corresponds to the system encased in coloured boxes.}
-	\label{fig:decomp3}
-\end{figure}
-%
 In the end, the result is that each set $S_i^0$ now have one more (in)equality for each $c \in S_\ttt$ %\red{containing variables from $X_i$} 
 compared to the original $S_i$, and the number of variables in $\var(S_i^0)$ has increased with the same amount compared to $X_i$.
 But, more importantly, now $|\var(S_i^0)\cap \var(S^0_\ttt)|$ equals $|S_\ttt|$, and eliminating variables in $X_i\cap Y$ will only produce (in)equalities whose set of variables is disjoint from the variable sets of the other local (in)equality systems.
@@ -363,64 +360,44 @@ z^0_{c,1} + z^0_{c,2} + \ldots + z^0_{c,k^0} &=
 where $z^1_{c,1} = z^0_{c,1} + z^0_{c,2},\; \ldots,\; z^1_{c,k^1}=z^0_{c,k^0-1} + z^0_{c,k^0}$. The latter sum can then again be rewritten into a sum of fewer terms, and so on.
 
 \begin{example}
-If we take the (separated) (in)equality system $S'$ from Example~\ref{ex:1}, the variable $u$ (which we want to keep) is now defined as a sum of three other variables ($z_1, z_2, z_3$) instead of the former six variables. %, and similarly for $u_2$. 
+If we take the (separated) (in)equality system $\mi{sep}(S)$ from Example~\ref{ex:2}, the variable $u$ (which we want to keep) is now defined as a sum of three other variables ($z_1, z_2, z_3$) instead of the former six variables. %, and similarly for $u_2$. 
 Of course, this example is very small and a further splitting of the transverse constraints is most likely not necessary, but for the purpose of illustration, we can further split $\mi{sum}$ %and $\mi{wSum}$ 
 such that the system obtained consists of the following (in)equalities (drawn in a tree structure): 
 
+\begingroup
+\centering
 \begin{tikzpicture}
-\node [above] at (6,3) {\footnotesize{$\mathit{sum}^1: -u + w_1 + w_2 = 0$}};
+\node [above] at (6.5,3) {\small{$\mathit{sum}^1_{decp}: -u + w_1 + w_2 = 0$}};
 %																									\mi{wSum}^1&: -u_2 + v' + w' = 0
-\draw [thin] (3,2) -- (6,3) -- (8,2);
-\node [above left] at (3,2) {\footnotesize{$\mi{Def}(w_1): %\left\{ \begin{array}{ll} 
+\draw [thin] (3.5,2) -- (6.5,3) -- (9.5,2);
+\node [above left] at (3.5,2) {\small{$\mi{Def}(w_1): %\left\{ \begin{array}{ll} 
 																-w_1 + z_1+ z_2 = 0$}};
 																 %-u'+ w_1' + w_2'&= 0
 																%\end{array}\right.$}};
-\draw [thin] (1,1) -- (3,2) -- (5,1);
-\node [above right] at (8,2) {\footnotesize{$\mi{Def}(w_2): %\left\{ \begin{array}{ll} 
+\draw [thin] (1,1) -- (3.5,2) -- (6,1);
+\node [above right] at (9.5,2) {\small{$\mi{Def}(w_2): %\left\{ \begin{array}{ll} 
 															-w_2 + z_3 = 0$}};
 																% -w' + z'&= 0
 															%	\end{array}\right.$}};
-\draw [thin] (8,2) -- (9,1);
-\node [below] at (1,1) {\footnotesize{$S^0_1: \left\{ \begin{array}{ll}-z_1 + x_1 + y_1 &= 0\\
+\draw [thin] (9.5,2) -- (11,1);
+\node [below] at (1,1) {\small{$S^0_1: \left\{ \begin{array}{ll}-z_1 + x_1 + y_1 &= 0\\
 																%-z_1' + x_1 + 2\cdot y_1 &= 0\\
 																x_1 + 2 \cdot y_1 &\leq 2\\
 															 -x_1 &\leq 0\\
-															 -y_1 &\leq 0\end{array}\right.\\$}};
-\node [below] at (5,1) {\footnotesize{$S^0_2: \left\{ \begin{array}{ll} -z_2 + x_2 + y_2 &= 0\\
+															 -y_1 &\leq 0\end{array}\right.$}};
+\node [below] at (6,1) {\small{$S^0_2: \left\{ \begin{array}{ll} -z_2 + x_2 + y_2 &= 0\\
 																%-z_2' + x_2 + 2\cdot y_2 &= 0\\
 																 -x_2 - 3\cdot y_2 &\leq 1\\
 																 x_2 &\leq 0\\
-																 y_2 &\leq 0\end{array}\right.\\$}};
-\node [below] at (9,1) {\footnotesize{$S^0_3: \left\{ \begin{array}{ll} -z_3 + x_3 + y_3 & = 0\\
+																 y_2 &\leq 0\end{array}\right.$}};
+\node [below] at (11,1) {\small{$S^0_3: \left\{ \begin{array}{ll} -z_3 + x_3 + y_3 & = 0\\
 																 %-z_3' + x_3 + 2\cdot y_3 &= 0\\
 																 -x_3 + y_3 &\leq 1\\
 																 2\cdot x_3 - y_3 &\leq 0\\
 																 -y_3 &\leq 0\end{array}\right.$}};
 \end{tikzpicture}
+\endgroup
 
-%\begin{align*}
-%\mathit{sum}^1&: -u_1 + v + w = 0\\
-%\mi{wSum}^1&: -u_2 + v' + w' = 0\\ 
-%S^1_1 &: \left\{ \begin{array}{ll} -v + x+ y & = 0\\
-%																 -v'+ x' + y'&= 0\end{array}\right.\\
-%S^0_x &: \left\{ \begin{array}{ll}-x + x_1 + x_2 &= 0\\
-%																-x' + x_1 + 2\cdot x_2 &= 0\\
-%																x_1 + 2 \cdot x_2 &\leq 2\\
-%															 -x_1 &\leq 0\\
-%															 -x_2 &\leq 0\end{array}\right.\\
-%S^0_y &: \left\{ \begin{array}{ll} -y + y_1 + y_2 &= 0\\
-%																-y' + y_1 + 2\cdot y_2 &= 0\\
-%																 -y_1 - y_2 &\leq 1\\
-%																 y_1 &\leq 0\\
-%																 y_2 &\leq 0\end{array}\right.\\
-%S^1_2 &: \left\{ \begin{array}{ll} -w + z &= 0\\
-%																 -w' + z'&= 0\end{array}\right.\\
-%S^0_z &: \left\{ \begin{array}{ll} -z + z_1 + z_2 & = 0\\
-%																 -z' + z_1 + 2\cdot z_2 &= 0\\
-%																 -z_1 + z_2 &\leq 1\\
-%																 -2\cdot z_1 - z_2 &\leq 0\\
-%																 -z_2 &\leq 0\end{array}\right..
-%\end{align*}
 To eliminate all variables but $u$ %and $u'$ 
 from the system, we first find projections $E^0_1\in \prs_{\{x_1, y_1\}}(S^0_1)$, $E^0_2\in \prs_{\{x_2, y_2\}}(S^0_2)$, $E^0_3\in \prs_{\{x_3, y_3\}}(S^0_3)$. Then we find projections $E^1_1\in \prs_{\{z_1,z_2\}}(E^0_1\cup E^0_2\cup %S^1_1)$ 
 \{\mi{Def}(w_1)\})$ and $E^1_2\in \prs_{\{z_3\}}(E^0_3\cup %S^1_2)$ 
@@ -428,7 +405,7 @@ from the system, we first find projections $E^0_1\in \prs_{\{x_1, y_1\}}(S^0_1)$
 \end{example}
 %
 To further divide the transverse (in)equalities, we use an ``appropriate'' partition $\mathbb{P}^1 = (P^1_1, \ldots, P^1_{k^1})$ of the indices of the local parts, $\{1,\ldots, k^0\}$.
-What is ``appropriate'' can vary, depending e.g. on the number of (in)equalities and variables in the subproblems plus the underlying structure (if any) of the original problem. %In our case, we have used parts that have between 1 and 3 elements (see Section~\ref{sec:testResults}). %in our particular case, we often make the parts have between 1 and 3 elements, depending on the underlying structure of the ship. 
+What is ``appropriate'' can vary, depending e.g. on the number of (in)equalities and variables in the subproblems as well as the underlying structure (if any) of the original problem. %In our case, we have used parts that have between 1 and 3 elements (see Section~\ref{sec:testResults}). %in our particular case, we often make the parts have between 1 and 3 elements, depending on the underlying structure of the ship. 
 For each transverse (in)equality $c^0_{decp}:(\sum_{1\leq i \leq k^0}z^0_{c,i}) + \sum_{x\in X_{\texttt{t}}}\coef(x,c)\cdot x
 \odot_{c}\rhs(c)$ in $S^0_\texttt{t}$ and each part $P^1_i\in \mathbb{P}^1$ we then define a variable to be the sum over the $z^0_{c,j}$-variables, whose index $j$ is in that particular part $P_i$. That is, we define the following equality $\mathit{Def}(z_{c,i}^1)$ over $\{z^1_{c,i}\}\cup\bigcup_{j\in P^i_i}\{z^0_{c,i}\}$.
 \begin{equation}\label{eq:z1}
@@ -441,7 +418,7 @@ c_{decp}^1: (\sum_{1\leq i\leq k^1} z^1_{c,i}) + \sum_{x\in X_{\texttt{t}}}\coef
 \]
 Letting $Z^1 \odef \cup_{1\leq i\leq k^1}\set{z^1_{c,i}}{c\in S_\ttt}$ we can now split the newly added (in)equalities into $k^1$ ``variable-disjoint'' and one ``transverse'' (in)equality systems by defining $S^1_i\odef\set{\mi{Def}(z^1_{c,i})}{c\in S^0_\texttt{t}}$ for each $1\leq i\leq k^1$ (i.e. $\VAR(S^1_i) = \bigcup_{c\in S^0_\ttt}\VAR(\mi{Def}(z^1_{c,i}))\subseteq Z^0\cup Z^1$) and $S^1_\texttt{t} \odef \set{c_{decp}^1}{c\in S^0_\texttt{t}}$ (i.e $\VAR(S^1_\ttt) = \bigcup_{c\in S^0_\ttt}\VAR(c^1_{decp}) = X_\ttt\cup Z^1$).
 
-If $\var(c_{decp}^1)$ is still deemed too big, i.e. $k^1$ is too big, we can repeat this step - use a partition of the indices of the previous partition to define and use auxiliary variables - until the (in)equality $c_{decp}^K$ only has a few terms, see Figure~\ref{fig:split}.
+If $\var(c_{decp}^1)$ is still deemed too large, i.e. $k^1$ is too large, we can repeat this step - use a partition of the indices of the previous partition to define and use auxiliary variables - until the (in)equality $c_{decp}^K$ only has a few terms, see Figure~\ref{fig:split}.
 %
 \begin{figure}
 	\centering
@@ -454,9 +431,10 @@ If $\var(c_{decp}^1)$ is still deemed too big, i.e. $k^1$ is too big, we can rep
 The procedure for splitting the transverse (in)equalities like this according to a partition at a given level $l$ can be described by the following procedure \Call{SplitTransverse}{} in Algorithm~\ref{alg:split}.
 %
 
-\begin{algorithm}\caption{Splitting a transverse (in)equality at the $l$'th level, according to a partition $\mathbb{P}^l$ of the indices of the previous level.}
+\begin{algorithm}
+\caption{Splitting a transverse (in)equality at the $l$'th level, according to a partition $\mathbb{P}^l$ of the indices of the previous level.}
 \label{alg:split}
-\begin{algorithmic}
+\begin{algorithmic}[1]
 \Function{SplitTransverse}{%Set of transverse (in)equalities $S^0_\texttt{t}$, partition $\mathbb{P}^l = (P^l_1, \ldots, P^l_{k^l})$}
 Transverse (in)equalities $S^0_\texttt{t}$, partitions $\mathbb{P}^l = (P^l_1, \ldots, P^l_{k^l})$}
 	%\State $X\gets \VAR(S^0_\ttt)\cup \bigcup_{1\leq m\leq l}\set{z^m_{c,i}}{c\in S^0_\ttt}$
@@ -491,8 +469,8 @@ See Appendix.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-\subsubsection*{Solving (in)equality system exploiting structure}
-Having separated the system and split the transverse (in)equalities, we can now solve the original problem, that is eliminate the variables $Y$ from the (in)equality system $S$. The result will be an (in)equality system, whose feasible region is the projection of $Y$ from $S$, i.e. the system belongs to $\prs_Y(S)$ and will be expressed in the variables $X\setminus Y$. Though, instead of considering the whole system $S$ and eliminating the variables in $Y$ from this set, we will as previously mentioned take advantage of the decomposition of the problem. 
+\subsubsection*{Solving the (in)equality system exploiting structure}
+Having separated the system and split the transverse (in)equalities, we can now solve the original problem, that is, eliminate the variables $Y$ from the (in)equality system $S$. The result will be an (in)equality system, whose feasible region is the projection of $Y$ from $S$, i.e. the system belongs to $\prs_Y(S)$ and will be expressed in the variables $X\setminus Y$. Though, instead of considering the whole system $S$ and eliminating the variables in $Y$ from this set, we will as previously mentioned take advantage of the decomposition of the problem. 
 
 The overall idea of the procedure is to use the constructed decomposition of the (in)equality system to make a tree structure of subsystems where a system $S^l_i$ has the subsystems $S^{l-1}_{j}$ as a child for all $j\in P^l_i$ (see Figure~\ref{fig:treeStructureSs}). The systems corresponding to the subtrees in this structure are then projected recursively (see Figure~\ref{fig:recursiveProjectionEs} later).
 
@@ -539,7 +517,7 @@ The following proposition proves the claim more formally.
 See Appendix.
 \end{proof}
 %
-\noindent To obtain a system from $\prs_Y(S)$, we can therefore instead eliminate all $Y$ and $Z$ variables from the final system. Although this seems more troublesome we can use the constructed tree structure to project the (in)equality system, such that a subsystem $S^l_i$ is projected by first projecting each of its subtree's systems ($\mathfrak{S}^{l-1}_j$ for $j\in P^l_i$) recursively, add these projections to $S^l_i$ and then finally project the result w.r.t. $(Y\cup Z^{l-1})\cap S^l_i$. See Figure~\ref{fig:recursiveProjectionEs}.
+\noindent To obtain a system from $\prs_Y(S)$, we can therefore instead eliminate all $Y$ and $Z$ variables from the final system. Although this seems more troublesome, we can use the constructed tree structure to project the (in)equality system, such that a subsystem $S^l_i$ is projected by first projecting each of its subtree's systems ($\mathfrak{S}^{l-1}_j$ for $j\in P^l_i$) recursively, add these projections to $S^l_i$ and then finally project the result w.r.t. $(Y\cup Z^{l-1})\cap S^l_i$. See Figure~\ref{fig:recursiveProjectionEs}.
 
 For each $0\leq l\leq K$ and $1\leq i \leq k^l$, we let $\mathfrak{E}^l_i$ be one of the systems in the (recursive) projection of $S^l_i$ and its subsystems (see Figure~\ref{fig:recursiveProjectionEs}). 
 
@@ -600,7 +578,8 @@ See Appendix.
 %
 Below in Algorithm~\ref{alg:solve} we present an algorithm for producing the system $\mathfrak{E}^l_i$ according to the definition in \eqref{eq:mathfrakE} for some choice-function $\mathit{pick}$. As described, this algorithm can then be used to  find a projection of $S$ w.r.t. $Y$. In the algorithm we use the method \Call{Project}{$S',Y'$} as a function that returns a projection of the (in)equality system $S'$ w.r.t. the set of variables $Y'\subseteq\VAR(S')$. This method uses preprocessing, Gauss- and FM-elimination as previously described in Algorithm~\ref{alg:project}. 
 
-\begin{algorithm}\caption{Projecting the variables $Y$ from an (in)equality system $S$ by decomposing it.
+\begin{algorithm}
+\caption{Projecting the variables $Y$ from an (in)equality system $S$ by decomposing it.
 $\mathbb{X}=(X_1,\ldots, X_{k^0})$ is a list of disjoint subsets of $\VAR(S)$, and 
 $\mathfrak{P}=(\mathbb{P}^1, \ldots, \mathbb{P}^K)$ is a list of partitions. Each $\mathbb{P}^l$ is a partition of $\{1,\ldots, k^{l-1}\}$, where $k^{i}=|\mathbb{P}^i|$ for $i>0$ and $k^0 = |\mathbb{X}|$.}
 \label{alg:solve}
@@ -613,7 +592,7 @@ $\mathfrak{P}=(\mathbb{P}^1, \ldots, \mathbb{P}^K)$ is a list of partitions. Eac
 	\State $\mathbb{S}^{K+1} =(S^K_\texttt{t})$
 	\State\Return\Call{Solve-Sub}{$S^{K+1}_1, (\mathbb{S}^0, \ldots, \mathbb{S}^{K+1}), \mathfrak{P}, Y, S^0_\ttt$}
 \EndFunction
-\State
+\Statex
 \Function{Solve-Sub}{$S^l_i, (\mathbb{S}^0, \ldots, \mathbb{S}^{K+1}), \mathfrak{P}, Y, S^0_\ttt$}
 \If{$i = 0$}
 	\State \Return \Call{Project}{$S^l_i$, $Y$} \label{line:project1}

@@ -8,9 +8,9 @@ When calculating the maximum in line~4 in Algorithm~\ref{alg:RedRem} we will the
 \end{equation}
 Though, if $\rhs(c)=0$ then we instead require the maximum to be within a certain treshold, $\epsilon'$. 
 
-If $c$ satisfy the condition in \eqref{eq:almostRed}, we call $c$ \emph{almost redundant}, while a $c$ that satisfy the redundancy criteria in \eqref{eq:redundant} is called \emph{truly redundant}. Our definition of an almost redundant inequality is similar to the definition in \cite{lukatskii08} and \cite{shapot12}. In these paper, the authors similarly use a method for coarsening the boundary of the feasible area that relies on removing almost redundant inequalities, though it differs a bit from ours.  
+If $c$ satisfies the condition in \eqref{eq:almostRed}, we call $c$ \emph{almost redundant}, while a $c$ that satisfies the redundancy criteria in \eqref{eq:redundant} is called \emph{truly redundant}. Our definition of an almost redundant inequality is similar to the definition in \cite{lukatskii08} and \cite{shapot12}. In these paper, the authors similarly use a method for coarsening the boundary of the feasible area that relies on removing almost redundant inequalities, though it differs a bit from ours.  
 
-\subsubsection{Parallel redundancy checks}
+\subsubsection{Concurrent redundancy checks}
 The overall setup is that a manager keeps track of $k>1$ redundancy checkers to which it distributes the inequalities that need to be checked. The redundancy checkers run in parallel. Each checker starts by removing the inequalities from their own copy of the original system that the other checkers have found truly redundant so far. Then it checks if its assigned inequality is truly redundant compared to this system (see \eqref{eq:redundant} on page~\pageref{eq:redundant}) and tells the result to the manager when done. The manager then gives the idle checker a new inequality to check (if there are any left) and remembers to inform the other checkers if the examined inequality was redundant.
 
 When using parallel redundancy checkers, it is important that we do \emph{not} remove almost redundant inequalities, i.e. inequalities that satisfy \eqref{eq:almostRed}. Otherwise, we might be in a situation as illustrated in Figure~\ref{fig:almostRedundant}, where the two inequalities $c$ and $c'$ both are almost redundant (each due to the other one). Each of them could justifiably be removed \emph{as long as} we keep the other one; removing both inequalities would result in a significantly different feasible area. Unfortunately, using parallel redundancy checkers, $c$ and $c'$ could be checked by different checkers which would then both report that their assigned inequality should be removed because it is almost redundant resulting in both inequalities being removed. Thus, we must use true redundancy for parallel redundancy checkers.
@@ -25,11 +25,11 @@ For similar reasons, when doing parallel redundancy checks it is also required t
 
 However, we still let the checkers examine whether the inequalities are almost redundant (see \eqref{eq:almostRed}) and report this back to the manager who stores these. After having examined all the needed inequalities by use of parallel redundancy checkers, we then go through and check the almost redundant ones sequentially with a single redundancy checker, and remove - in turn - the ones that are still almost redundant. For the example in Figure~\ref{fig:almostRedundant} this would mean that which ever of $c$ and $c'$ is examined first is also removed, while the other is not.
 
-The checkers also check and report on inequalities for which the optimization of its left hand side resulted in a bad condition number (also known as $\kappa$-value). This number is a measure for how much (small) differences in the input value (i.e. the coefficients and right-hand-side of the (in)equalities) effects the value of output (i.e. the found optimal value); see {e.g. \cite{numAnalysis}}. In general, the larger this number is, the less we can trust the result, and we have chosen a threshold $\mathcal{K}$ that gives the limit for when we can trust the result. As the system gets smaller due to the removal of redundant inequalities, inequalities might be reexamined with a lower $\kappa$-value as a result, and therefore we also re-examine the inequalities that resulted in a bad $\kappa$-value when they were checked by the parallel redundancy checkers. 
-Finally we also reexamine inequalities, for which the optimization software was not able to solve the optimization of its left-hand-side.
+The checkers also check and report on inequalities for which the optimization of its left hand side resulted in a bad condition number (also known as $\kappa$-value). This number is a measure for how much (small) differences in the input value (i.e. the coefficients and right-hand-side of the (in)equalities) effects the value of output (i.e. the found optimal value); see {e.g. \cite{numAnalysis}}. Essentially, the larger this number is, the less we can trust the result. We have chosen a threshold $\mathcal{K}$ that gives the limit for when we can trust the result. As the system gets smaller due to the removal of redundant inequalities, inequalities might be reexamined with a lower $\kappa$-value as a result, and therefore we also re-examine the inequalities that resulted in a bad $\kappa$-value when they were checked by the parallel redundancy checkers. 
+Finally we also reexamine inequalities, for which the lp-solver was not able to solve the optimization of its left-hand-side.
 
 The pseudocode for the redundancy checkers is listed in Algorithm~\ref{alg:checker}, and the pseudocode for the manager is listed in Algorithm~\ref{alg:manager}. 
-When the manager receives results from the checkers (via calls to \Call{manageResult} in line~24 in Algorithm~\ref{alg:manager}), it finishes handling one call before handling the next call. %For the parallel checkers, as explained it is important to only check for strict redundancy (well, it is important that only strictly redundant inequalities are removed since otherwise the result can be incorrect due to two parallel checkers removing/reporting each their ``almost redundant'' inequality redundant). When the inequalities are checked sequentially, we can also remove ``almost redundant'' inequalities.
+When the manager receives results from the checkers (via calls to \Call{ManageResult}{} in line~24 in Algorithm~\ref{alg:manager}), it finishes handling one call before handling the next call. %For the parallel checkers, as explained it is important to only check for strict redundancy (well, it is important that only strictly redundant inequalities are removed since otherwise the result can be incorrect due to two parallel checkers removing/reporting each their ``almost redundant'' inequality redundant). When the inequalities are checked sequentially, we can also remove ``almost redundant'' inequalities.
 
 \begin{algorithm}[htbp]
 \begin{algorithmic}\caption{Initializing and running a redundancy checker. A checker can either check for true redundancy (used when doing parallel redundancy checks) or not, in which case it checks for ``almost redundancy'' (for doing sequential redundancy checks).}\label{alg:checker}
@@ -40,21 +40,22 @@ When the manager receives results from the checkers (via calls to \Call{manageRe
 		\State $\mathit{max} \gets \max\set{\vea(c')\cdot\ve{r}}{\ve{r}\in \feas(S')}$
 		\State Inspect solution:
 		\Indent
-			\State $\mathit{red}\gets \false, \mathit{again}\gets \false$
-			\State $\mathit{goodK} \gets \Call{GetConditionNumber}{\null}\leq \mathcal{K}$
+			\State $\mathit{red}\gets \false, \mathit{resolve}\gets \false$
+%			\State $\mathit{goodK} \gets \Call{GetConditionNumber}{\null}\leq \mathcal{K}$
+			\State $\kappa\gets \Call{GetConditionNumber}{\null}$
 			\If{$\mathit{truely}$}
-				\State $\mi{red} \gets \Call{IsTruelyRedundant?}{\mathit{max}, \rhs(c')}$ and $\mathit{goodK}$
-				\State $\mathit{again} \gets \Call{IsAlmostRedundant?}{\mathit{max}, \rhs(c')}$
+				\State $\mi{red} \gets \Call{IsTruelyRedundant?}{\mathit{max}, \rhs(c')}$ and $\kappa\leq \mathcal{K}$
+				\State $\mathit{resolve} \gets \Call{IsAlmostRedundant?}{\mathit{max}, \rhs(c')}$
 			\Else
-				\State$\mi{red} \gets \Call{IsAlmostRedundant?}{\mathit{max}, rhs(c')}$ and $\mathit{goodK}$
+				\State$\mi{red} \gets \Call{IsAlmostRedundant?}{\mathit{max}, rhs(c')}$ and $\kappa\leq\mathcal{K}$
 			\EndIf
-			\State $\mathit{again} \gets \mathit{again}$ or $\neg \mathit{goodK}$ or \Call{Unsolved?}{\null}
+			\State $\mathit{resolve} \gets \mathit{resolve}$ or $\kappa>\mathcal{K}$ or \Call{Unsolved?}{\null}
 		\EndIndent
 		\If{$\neg \mathit{red}$}
 			\State Add $c'$ to $S'$
 		\EndIf
 %		\State \textbf{synchronized} access to \textbf{manager} 
-		\State $(c', \mi{reds})\gets m.\Call{ManageResult}{c', \mathit{red}, \mathit{again}}$
+		\State $(c', \mi{reds})\gets m.\Call{ManageResult}{c', \mathit{red}, \mathit{resolve}}$
 %		\StateInd $c \gets \Call{NextIneqToCheck}{\null}$
 %		\StateInd $\mathit{redundants} \gets \Call{GetRedundants}{\null}$
 %		\State \textbf{end synchronized}

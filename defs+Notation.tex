@@ -49,13 +49,12 @@ The equality $c: \vea(c)\cdot\ve{x} = \rhs(c)$
 is redundant iff both inequalities 
 $\vea(c)\cdot\ve{x} \leq \rhs(c)$ and $-\vea(c)\cdot\ve{x} \leq -\rhs(c)$ 
 are redundant.
-
 If the (in)equality $c$ is \emph{not} redundant, it is called \emph{non-redundant}.
 %
 \\\\
 %\red{Is not needed, I guess: The feasible region of an (in)equality $c\in\ie$ defines one (if $c$ is an inequality) or two (if $c$ is an equality) halfspaces in $\mathbb{R}^{|\VAR(c)|}$, and therefore $\feas(S)$ is a polyhedron in $\mathbb{R}^{|\VAR(S)|}$.} 
 %
-As described, the feasible region of $S$ describes the combination of values for the variables in $\VAR(S)$ that satisfy all the (in)equalities in $S$. However, there are some variables $Y\subseteq \VAR(S)$ whose value we are not interested in, we just want to know that a satisfying value for these variables exists.  
+As described, the feasible region of $S$ describes the combination of values for the variables in $\VAR(S)$ that satisfy all the (in)equalities in $S$. However, for the sake of abstraction there are some variables $Y\subseteq \VAR(S)$ whose value we are not interested in, we just want to know that a satisfying value for these variables exists.  
 Therefore, we want to find a set of values $P$ for the variables of interest ($\VAR(S)\setminus Y$), such that when we have a set of values in $P$ then we can extend it with values for the variables in $Y$ in such a way that the collective set of values satisfy all (in)equalities in $S$. 
 The {projection} of the feasible region of $S$ gives us the largest set of values with this property.
 
@@ -75,11 +74,11 @@ For convenience of notation we let $\proj_{Y'}\big(\feas(S)\big) = \proj_{Y'\cap
 	\caption{Projection of the polyhedron $\feas(S)$ in $\mathbb{R}^3$ with respect to the third variable }
 	\label{fig:proj}
 \end{figure}
-We notice that for arbitrary subsets $Y_1$ and $Y_2$ of $Y$ such that $Y_1\dot\cup Y_2=Y$ \footnote{$\dot\cup$ denotes disjoint union.}, we have that $\proj_Y(P)=\proj_{Y_1}(\proj_{Y_2}(P))$. 
+We notice that for arbitrary subsets $Y_1$ and $Y_2$ of $Y$ such that $Y_1\dot\cup Y_2=Y$,\footnote{$\dot\cup$ denotes disjoint union.} we have that $\proj_Y(P)=\proj_{Y_1}(\proj_{Y_2}(P))$. 
 \\\\
 In this report, we will only be interested in the projection of the feasible region of (in)equality systems,
-and these are the feasible sets of (other) (in)equality systems (see e.g. \cite{ziegler95}). 
-Likewise, we want to talk about a system that ``generates'' a certain projection, so for this we define $\prs_Y(S)$ to be the set of (in)equality systems whose feasible set is the projection of $S$ w.r.t. $Y$, i.e. 
+and these are the feasible sets of (other) (in)equality systems (see e.g. \cite{ziegler95}). What we are interested in are the dependencies among the non-projected variables,  
+so we want to talk about a system that ``generates'' a certain projection. For this we define $\prs_Y(S)$ to be the set of (in)equality systems whose feasible set is the projection of $S$ w.r.t. $Y$, i.e. 
 \[
 \prs_Y(S)\odef \set{S'\subset\ie}{\VAR(S')=\VAR(S)\setminus Y \text{ and }\feas(S') = \proj_Y\big(\feas(S)\big)}.
 \]

@@ -11,7 +11,7 @@ sections called \textit{bays} that each are divided into a grid by stacks and ti
 \begin{figure*}[tbh]
   \centering
   $\qquad$
-	\subfloat[]{\label{fig:vessel} \includegraphics[scale=0.6]{figures/vessel1.pdf}}\\
+	\subfloat[]{\label{fig:vessel} \includegraphics[scale=0.3]{figures/vesselBlocks.pdf}}\\
   \subfloat[]{\label{fig:bay_a} \includegraphics[scale=0.65]{figures/bay1.pdf}}~
 	\qquad
 %  \hfill
@@ -24,26 +24,16 @@ sections called \textit{bays} that each are divided into a grid by stacks and ti
 The containers transported on a vessel usually have a standard size that fits the cells and slots; the containers are normally (ISO standard) $8'$ wide, $8'6''$ high and $20'$,
 $40'$ or $45'$ long, though we do not consider the latter in this report. Accordingly, a cell can hold either two $20'$ containers (one in each slot) or one $40'$ container (Figure~\ref{fig:bay_b}). Further, some containers are refrigerated (\emph{reefers}), and must be stowed at a power plug. 
 The corners of the containers are constructed such that containers can be stacked, though $20'$ containers cannot
-be stacked on top of $40'$ containers due to the lack of corner supports in th middle of $40'$ containers (see Figure~\ref{fig:bay_b}). 
+be stacked on top of $40'$ containers due to the lack of corner supports in the middle of $40'$ containers (see Figure~\ref{fig:bay_b}). 
 
-The capacity of a container vessel is given in \emph{TEU} (Twenty-foot Equivalent Units), i.e. a standard $20'$ container as described above takes up one TEU, while a $40'$ container takes up two TEU. Each stack has a height and weight limit. Separate total weight limits for $20'$ and $40'$ containers exist, since only $20'$ containers rest on the middle support posts of the stack, while the end posts hold weight of $20'$ and $40'$ containers (Figure~\ref{fig:bay_b}). 
+The capacity of a container vessel is measured in \emph{TEU} (Twenty-foot Equivalent Units), i.e. a standard $20'$ container as described above takes up one TEU, while a $40'$ container takes up two TEU. Each stack has a height and weight limit. Separate total weight limits for $20'$ and $40'$ containers exist, since only $20'$ containers rest on the middle support sockets of the stack, while the end sockets hold weight of both $20'$ and $40'$ containers (see Figure~\ref{fig:bay_b}). 
 
-Though containers physically are placed in specific slots, the stowage models considered {specifies} how many containers of each \emph{type} should be placed in the subsections of each bay, called \emph{locations}. 
-These locations emerge by dividing the bays {vertically} into sections on deck and below deck, respectively, and {horizontally} into a center section and symmetric side-sections, respectively; see Figure~\ref{fig:bay_a} which shows a bay divided into four location indicated by their number. The type of containers is here specified by the length, reefer-property and a weight class. The capacities for stacks translate to capacities for locations.
+Though containers physically are placed in specific slots, the stowage models considered here are themselves abstractions called master plans that specify how many containers of each \emph{type} to stow in each subsection of each bay, referred to as a {\em location}. These locations emerge by dividing the bays {vertically} into sections on deck and below deck, respectively, and {horizontally} into a center section and symmetric side-sections, respectively; see Figure~\ref{fig:bay_a} which shows a bay divided into four location indicated by their number. The type of containers is here specified by the length, reefer-property and a weight class. The capacities for stacks translate to capacities for locations.
 
-Besides the location-based capacity constraints, global hydrostatic constraints ensure the stability of the vessel. 
-Stress forces arise as a result of gravitation acting downwards on the vessel and buoyancy acting upwards. Limits on these stress forces are given for a set of points along the vessel called \emph{frames}. %Figure~\ref{fig:vessel} shows the distribution of the vertical forces (resulting from gravitation and buoyancy) along the \red{sections/frames/bays} of the vessel. 
-Buoyancy comes from the vessel's displacement of water and hence depends on the varying (and irregular) shape of the hull, which is given at a set of reference points called \emph{stations} (Figure~\ref{fig:stations}). At these stations, the area submerged in water can be approximated by linear functions of the vessel's displacement and longitudinal center of gravity (\emph{lcg}), and from this an approximation of the buoyancy force of the vessel between two consecutive stations can be calculated. 
-Further hydrostatic constraints for ensuring the stability of the vessel is considered in \cite{AlbertosThesis} but is not considered here.
-%
-\begin{figure}[htbp]
-  \centering
-   \includegraphics[scale=0.7]{figures/stations.pdf}
-\caption{Stations of a vessel. Adapted from \cite{AlbertosThesis}.}
-\label{fig:stations}
-\end{figure}
+Besides the location-based capacity constraints, global hydrostatic constraints ensure the stability of the vessel. Stress forces arise as a result of gravitation acting downwards on the vessel and buoyancy acting upwards. The gravity forces are divided into three components: the light ship (i.e, the vessel mass without cargo and ballast water), cargo, and ballast water. Buoyancy forces are due to the vessel's displacement of water and hence depends on the varying (and irregular) shape of the hull, which is given at a set of reference points called \emph{stations} (see Figure~\ref{fig:vessel}). At these stations, the area submerged in water can be approximated by linear functions of the vessel's  longitudinal center of gravity (\emph{lcg}), and from this an approximation of the buoyancy force of the vessel between two consecutive stations can be calculated.~\footnote{A more accurate bouncy model also takes the displacement of the vessel into account.}
 
-Besides containers, vessels also carry ballast tanks in fixed positions along the vessel that can be filled with water. Doing this help handling the stability of the vessel so that otherwise unfeasible stowage configurations can be {achived}. {Bounds for these ballast tanks can be defined as well as an overall upper bound for these.}
+There are three major stress forces: shear force, bending moment, and torsion moment. Limits on these stress forces are given for a set of points along the vessel called \emph{frames} (see Figure~\ref{fig:vessel}). In this work we only consider the limits on shear forces.
+
 
 \subsubsection*{Sets, variables, constants}
 To formally describe the stacking and stability constraints of the considered stowage models, we use the sets, variables and constants summarized in Table~\ref{table:sets}, Table~\ref{table:vars} and Table~\ref{table:constants}, respectively.
@@ -57,7 +47,7 @@ $L$
 $\Sec$
 	&Set of frames.\\
 $\Sec^{\trt{f}},\Sec^\trt{a}\subseteq \Sec$
-	&The frames \emph{fore} and \emph{aft}.\\
+	&Sets of frames \emph{fore} and \emph{aft} where shear force limits must hold.\\
 $S, S' = \{s_1,\ldots, s_S\}$ 
 	&Number of stations and (ordered) set of stations.\\
 $T$
@@ -67,7 +57,7 @@ $T^\trt{20}$, $T^\trt{40}$, $T^\trt{R}$, $T^\trt{20R}$, $T^\trt{40R}\subseteq T$
 $\mi{BT}$ 
 	& Set of ballast tanks.\\
 \end{tabular}
-\caption{Sets used in the considered stowage models}
+\caption{Sets used in the considered stowage models.}
 \label{table:sets}
 \end{table}
 %
@@ -96,9 +86,9 @@ $\bonjean_s \in\mathbb{R}$
 $\shear_f^{\trt{c},e}$, $\shear_f^{\trt{bt},e}$, $\shear_f^{\trt{bc},e}\in\mathbb{R}$
 		&The contribution to the shear force for/aft (${e}\in\{\trt{f},\trt{a}\}$) each frame $f\in\Sec$ from containers (\trt{c})/ballast tanks (\trt{bt})/buoyancy (\trt{bc})
 \end{tabular}
-\caption{Variables used in the considered stowage models}\label{table:vars}
+\caption{Variables used in the considered stowage models.}\label{table:vars}
 \end{table}
-Regarding the variables, we note that even though $x_{l,\tau}$ is a number of containers and hence a natural number, we model it as a reel number to ensure that the resulting model is an LP. \red{This approximation is fine, since...} 
+Regarding the variables, we note that even though $x_{l,\tau}$ is a number of containers and hence a natural number, we model it as a reel number to ensure that the resulting model is an LP. Due to the large number of containers that can be stowed in each location, this approximation is sufficiently accurate in practice. 
 %
 \begin{table}[p]
 \centering
@@ -223,12 +213,13 @@ For the ballast tanks, we also require that each tank's content is within limits
 \paragraph{Hydrostatic constraints}
 %For vessel stability, the model in \cite{AlbertosThesis} uses variable displacement, and for this it uses discrete displacement intervals.  
 %To avoid integer variables we consider here a constant displacement interval, \red{and we assume that the stowed containers lie within $75$ to $85$ percent of the vessel's maximal allowable displacement.} \marginpar{maybe put in model}
-At each station the submerged area of the cross-section has been linearized as a function of the lcg, and the buoyancy force for each section between consecutive stations are calculated as the average of the two areas times the distance between the two stations \eqref{bonjeanVarDef}. 
+At each station, the submerged area of the cross-section has been linearized as a function of the lcg, and the buoyancy force for each section between consecutive stations are calculated as the average of the two areas times the distance between the two stations \eqref{bonjeanVarDef}. 
 Instead of calculating the vessel's lcg, we only require it to be within a given interval \eqref{lcgLim}.
 %For each bonjean station $s$ (except the last) %\red{(well, it is measured in between two stations and the assigned to the first station)}, 
 %a bonjean variable is defined as the average \red{of something ... of the station $s$ and the next station, that is, the variable defines the averaged force in the middle between the two stations}.
 
-The shear forces at each frame can then be calculated as the sum of the constant weight of the vessel fore (aft) the frame, the weight of the containers and ballast tanks for (aft) the frame, and the buoyancy fore (aft) the frame, the latter of which which will be negative, see \eqref{eq:shear}. For each of the frames, we then require these shear forces to be within limits \eqref{shearLimits}.   
+The shear forces must be within limits for a set of fore ($\Sec^{\trt{f}}$) and aft ($\Sec^\trt{a}$) frames. The shear force for a fore frame is the sum of resulting forces acting from the frame towards the stern, while the shear force for an aft frame is the sum of resulting forces acting from the frame towards the bow of the vessel, see \eqref{eq:shear}. For each of the frames, we then require these shear forces to be within limits \eqref{shearLimits}.
+
 \begin{gather}
 \forall s_i \in S'\setminus\{s_S\}:\;
 \bonjean_{s_i} = \frac{1}{2}\cdot D_{s_i}\cdot(\Bonj^\trt{W}_{s_i} + \mi{lcg}\cdot \Bonj^\trt{lcg}_{s_i}	+ \Bonj^\trt{W}_{s_{i+1}} + \mi{lcg}\cdot \Bonj^\trt{lcg}_{s_{i+1}})
@@ -245,7 +236,7 @@ The shear forces at each frame can then be calculated as the sum of the constant
 \label{shearLimits}
 \end{gather}
 %
-\subsection{Test results}\label{sec:testResults}
+\subsection{Experimental results}\label{sec:testResults}
 To do a nested decomposition (see section \ref{sec:nested}), we will, though, divide the constraints in \eqref{eq:shear} in a part coming from the containers, ballast tanks and bouyancy, respectively, using auxiliary variables. Thus \eqref{eq:shear} is replaced with \eqref{shearLocDef}-\eqref{shearDef} below.
 \begin{align}
 \label{shearLocDef} 

@@ -11,7 +11,7 @@ sections called \textit{bays} that each are divided into a grid by stacks and ti
 \begin{figure*}[tbh]
   \centering
   $\qquad$
-	\subfloat[]{\label{fig:vessel} \includegraphics[scale=0.6]{figures/vessel1.pdf}}\\
+	\subfloat[]{\label{fig:vessel} \includegraphics[scale=0.6]{figures/vesselBlocks.pdf}}\\
   \subfloat[]{\label{fig:bay_a} \includegraphics[scale=0.65]{figures/bay1.pdf}}~
 	\qquad
 %  \hfill
@@ -35,13 +35,6 @@ Besides the location-based capacity constraints, global hydrostatic constraints 
 Stress forces arise as a result of gravitation acting downwards on the vessel and buoyancy acting upwards. Limits on these stress forces are given for a set of points along the vessel called \emph{frames}. %Figure~\ref{fig:vessel} shows the distribution of the vertical forces (resulting from gravitation and buoyancy) along the \red{sections/frames/bays} of the vessel. 
 Buoyancy comes from the vessel's displacement of water and hence depends on the varying (and irregular) shape of the hull, which is given at a set of reference points called \emph{stations} (Figure~\ref{fig:stations}). At these stations, the area submerged in water can be approximated by linear functions of the vessel's displacement and longitudinal center of gravity (\emph{lcg}), and from this an approximation of the buoyancy force of the vessel between two consecutive stations can be calculated. 
 Further hydrostatic constraints for ensuring the stability of the vessel is considered in \cite{AlbertosThesis} but is not considered here.
-%
-\begin{figure}[htbp]
-  \centering
-   \includegraphics[scale=0.7]{figures/stations.pdf}
-\caption{Stations of a vessel. Adapted from \cite{AlbertosThesis}.}
-\label{fig:stations}
-\end{figure}
 
 Besides containers, vessels also carry ballast tanks in fixed positions along the vessel that can be filled with water. Doing this help handling the stability of the vessel so that otherwise unfeasible stowage configurations can be {achived}. {Bounds for these ballast tanks can be defined as well as an overall upper bound for these.}
 

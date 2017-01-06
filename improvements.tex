@@ -160,21 +160,12 @@ Due to the sometimes large number of inequalities that we do not know the redund
 Given the theoretical complexity of the Fourier\--Motzkin\--elimination procedure, we might not have great hope of using this to eliminate a large number of variables from a very large (in)equality system, at least not if the values of the (in)equalities are randomly generated.
 %However, we are looking to take advantage of the build-in structure of our problem.
 %
-However, given an (in)equality system coming from a natural occurring problem, it is common that the constraints are \emph{block structured} \cite{williams}, where groups of constraints are ``local'' for each subdomain of the problem, while other ``global'' or ``transverse'' constraints involve many or all of the local subdomains (see Figure~\ref{fig:decomp1}). We will in the following assume that the given problem has a block structure and exploit this fact. 
+However, given an (in)equality system coming from a natural occurring problem, it is common that the constraints are \emph{block structured} \cite{williams}, where groups of constraints are ``local'' for each subdomain of the problem, while other ``global'' or ``transverse'' constraints involve many or all of the local subdomains. We will in the following assume that the given problem has a block structure and exploit this fact. 
 
 Given a problem with block structure, the dense, ``transverse'' (in)equalities are problematic for Fourier-Motzkin-elimination, especially when they use variables that should not be eliminated, and particularly when they are equalities. 
 Every time a variable in a transverse equality is eliminated, all the ``local'' (in)equalities using the variable \emph{will be combined} with one of the two inequalities corresponding to the transverse equality. The result is that we get a large number of inequalities using all the variables of the large transverse equality \emph{and} the variables from the local (in)equalities. Thus, not only do we increase the size of the problem, we also make it (much) more dense, both making the rest of the elimination process more time-consuming, and also increasing the time spend on finding redundant inequalities.
 %
 {Below we show how to avoid this.}
-
-\begin{figure}
-	\centering
-		\includegraphics{figures/decomp1B2.pdf}
-	\caption{Separation of the (in)equalities of an (in)equality system into local parts and a transverse part. 
-	The figure shows the coefficient matrix for the system, where non-zero sections have been colored black.}
-	\label{fig:decomp1}
-\end{figure}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Separating the (in)equality system}
 If possible, it would be an advantage to be able to separate our (in)equality system into a (preferably large) number of smaller (in)equality systems that have ``nothing in common'', meaning that there is no overlap between the sets of variables being used in the different subsystem. If this can be done, we can then solve each subsystem separately in parallel after which the resulting systems can be combined (see Lemma~\ref{lm:projection} item \ref{lm:1.1}). As long as each subsystem is sufficiently small (such that it is can be projected in ``reasonable'' time) this may turn an insurmountable large problem into a projectable one. 
@@ -185,6 +176,14 @@ We therefore consider $k^0$ disjoint subsets of $\VAR(S)$ - $X_1, X_2,\ldots, X_
 The result is that we have divided the system into $k^0$ \emph{local} parts with disjoint sets of used variables, and a \emph{transverse} part that contains (in)equalities using variables from more than one of the other local parts. 
 
 Our (in)equality system can thus be illustrated as in Figure~\ref{fig:decomp1}.
+
+\begin{figure}[hb]
+	\centering
+		\includegraphics{figures/decomp1B2.pdf}
+	\caption{Separation of the (in)equalities of an (in)equality system into local parts and a transverse part. 
+	The figure shows the coefficient matrix for the system, where non-zero sections have been colored black.}
+	\label{fig:decomp1}
+\end{figure}
 
 It should be noticed that in general, this can be done in many ways, but in our case - and in many common cases - there is a natural way in which the local parts/local variables present themselves. %For our particular case, many of the constraints are naturally concentrated around stowage of each location while a few constraints traverse several locations, such as the hydrostatic constraints or the constraint defining the type variable.
    

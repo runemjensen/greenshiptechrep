@@ -62,10 +62,11 @@ number of non-redundant inequalities can only grow in single exponential \cite{M
 \end{algorithmic}
 \end{algorithm}
 %
-The function \Call{ChooseVariableToDelete}{} in Algorithm~\ref{alg:FMBasic} is a heuristic to determine which variable among the ones needed to be eliminated that should be eliminated first. In principle, there are many choices for heuristics, but the most commonly used heurisitic is the greedy heuristic that aims at minimizing the size of the inequality system in the next step \cite{duffin74}. This is easy to calculate from the current system since the increase in size only depends on the size of the sets $\Pos_S$ and $\Neg_S$ for the variable in question. We have also chosen this heuristic, that is, the function \Call{ChooseVariableToDelete}{$Y,S$} returns 
+The function \Call{ChooseVariableToDelete}{} in Algorithm~\ref{alg:FMBasic} is a heuristic to determine which variable among the ones needed to be eliminated that should be eliminated first. In principle, there are many choices for heuristics, but the most commonly used heuristic is the greedy heuristic that aims at minimizing the size of the inequality system in the next step \cite{duffin74}\footnote{This heuristic was useful for us, but though it is very commonly used, note that its success may depend on the specific problems considered; Imbert \cite{imbert93} states in his conclusion to have found the related heuristic returning $\argmin_{y\in Y}|\Pos_S(y)||\Neg_S(y)|$ to be inferior to ``any other choice, even at random''.}. This is easy to calculate from the current system since the increase in size only depends on the size of the sets $\Pos_S$ and $\Neg_S$ for the variable in question. We have also chosen this heuristic, that is, the function \Call{ChooseVariableToDelete}{$Y,S$} returns 
 \[
-\argmin_{y\in Y}\big(|\Pos_S(y)||\Neg_S(y)| - |\Pos_S(y)|-|\Neg_S(y)|\big)
+\argmin_{y\in Y}\big(|\Pos_S(y)||\Neg_S(y)| - |\Pos_S(y)|-|\Neg_S(y)|\big).
 \] 
+%
 %
 %{It should be noted, though, that Imbert \cite{imbert93} states in his conclusion to have found the related heuristic returning $\argmin_{y\in Y}|\Pos_S(y)||\Neg_S(y)|$ to be inferior to ``any other choice, even at random''. The particular experiments, results and the specific problems considered for the experiments is, however, not presented.}
 %

@@ -28,16 +28,17 @@ the inequality $\FMcomb(x,c^+, c^-)$ over $X\setminus\{x\}$ given below. %-comb$
 %
 The procedure is described in pseudocode in Algorithm~\ref{alg:FMBasic}.
 
-When eliminating a variable $x_i$, the inequalities in the constructed set $S'$ are all implied by the inequalities in $S$. On the other hand, it also holds that if $(x_1, x_2, \ldots, x_{i-1}, x_{i+1}, \ldots, x_n)$ satisfies the inequalities in $S'$ then there is an $x_i$ such that $(x_1, x_2, \ldots, x_{i-1}, x_i, x_{i+1}, \ldots, x_n)$ satisfies the inequalities in $S$ {(e.g. \cite{duffin74}, Lemma 1)}. That is, $S' = \proj_{\{x_i\}}(S)$.
+When eliminating a variable $x_i$, the inequalities in the constructed set $S'$ are all implied by the inequalities in $S$. On the other hand, it also holds that if $(x_1, x_2, \ldots, x_{i-1}, x_{i+1}, \ldots, x_n)$ satisfies the inequalities in $S'$ then there exists an assignment to $x_i$ such that $(x_1, x_2, \ldots, x_{i-1}, x_i, x_{i+1}, \ldots, x_n)$ satisfies the inequalities in $S$ {(e.g. \cite{duffin74}, Lemma 1)}. That is, $S' = \proj_{\{x_i\}}(S)$.
 %\marginpar{How to write it without using the index $i$?}
 
-The disadvantage of the procedure is its complexity. Due to the combination of inequalities in each step, in the worst case scenario where $|\Pos_S(x)| = |\Neg_S(x)| = \frac{|S|}{2}$ for the current system $S$, the number of inequalities in the succeeding system is $\frac{1}{4}|S|^2$. This implies that (both time and space) complexity is double-exponential.  
+A disadvantage of the procedure is its complexity. Due to the combination of inequalities in each step, in the worst case scenario where $|\Pos_S(x)| = |\Neg_S(x)| = \frac{|S|}{2}$ for the current system $S$, the number of inequalities in the succeeding system is $\frac{1}{4}|S|^2$. This implies that (both time and space) complexity is double-exponential.  
 We also notice that the denser the system is, the more it will grow. 
-It should, however, also be emphasized that not all inequalities in a succeeding system are necessarily non-redundant.
+It should, however, also be emphasized that not all inequalities in a succeeding system are necessarily non-redundant. In fact, the
+number of non-redundant inequalities can only grow in single exponential \cite{Monniaux10}.
 %
-\begin{algorithmic}
-\begin{algorithm}\caption{Eliminating variables from an inequality system $S$ using Fourier-Motzkin-elimination.}
-\label{alg:FMBasic}
+\begin{algorithm}
+\caption{Eliminating variables from an inequality system $S$ using Fourier-Motzkin-elimination.}\label{alg:FMBasic}
+\begin{algorithmic}[1]
 \Function{FM-Elim}{Inequality system $S$, variables to eliminate $Y\subseteq \VAR(S)$}
 	\State  $S'\gets S$, $Y'\gets Y$
 	\While{ $Y'\neq \emptyset$ }
@@ -47,7 +48,7 @@ It should, however, also be emphasized that not all inequalities in a succeeding
 	\EndWhile
 	\State \Return $S'$
 \EndFunction
-\State
+\Statex
 \Function{FM-ElimVar}{Inequality system $S$, variable to eliminate $x\in var(S)$}
 \State Divide $S$ into $\Pos_S(x)$, $\Neg_S(x)$ and $\mathit{Zero}_S(x)$
 \State $S'\gets \set{c_{\VAR(S)\setminus\{x\}}}{c\in\mathit{Zero}_S(x)}$ 
@@ -58,15 +59,16 @@ It should, however, also be emphasized that not all inequalities in a succeeding
 \EndFor
 \State \Return $S'$
 \EndFunction
-\end{algorithm}
 \end{algorithmic}
+\end{algorithm}
 %
-The function \Call{ChooseVariableToDelete}{} in Algorithm~\ref{alg:FMBasic} is a heuristic to determine which variable among the ones needed to be eliminated that should be eliminated first. In principle, there are many choices for heuristics, but the most commonly used heurisitic is the greedy heuristic that aims at minimizing the size of the inequality system in the next step \cite{duffin74}. This is easy to calculate from the current system since the increase in size only depends on the size of the sets $\Pos_S$ and $\Neg_S$ for the variable in question. We have also chosen this heuristic, that is, the function \Call{ChooseVariableToDelete}{$Y,S$} returns 
+The function \Call{ChooseVariableToDelete}{} in Algorithm~\ref{alg:FMBasic} is a heuristic to determine which variable among the ones needed to be eliminated that should be eliminated first. In principle, there are many choices for heuristics, but the most commonly used heuristic is the greedy heuristic that aims at minimizing the size of the inequality system in the next step \cite{duffin74}\footnote{This heuristic was useful for us, but though it is very commonly used, note that its success may depend on the specific problems considered; Imbert \cite{imbert93} states in his conclusion to have found the related heuristic returning $\argmin_{y\in Y}|\Pos_S(y)||\Neg_S(y)|$ to be inferior to ``any other choice, even at random''.}. This is easy to calculate from the current system since the increase in size only depends on the size of the sets $\Pos_S$ and $\Neg_S$ for the variable in question. We have also chosen this heuristic, that is, the function \Call{ChooseVariableToDelete}{$Y,S$} returns 
 \[
-\argmin_{y\in Y}\big(|\Pos_S(y)||\Neg_S(y)| - |\Pos_S(y)|-|\Neg_S(y)|\big)
+\argmin_{y\in Y}\big(|\Pos_S(y)||\Neg_S(y)| - |\Pos_S(y)|-|\Neg_S(y)|\big).
 \] 
 %
-{It should be noted, though, that Imbert \cite{imbert93} states in his conclusion to have found the related heuristic returning $\argmin_{y\in Y}|\Pos_S(y)||\Neg_S(y)|$ to be inferior to ``any other choice, even at random''. The particular experiments, results and the specific problems considered for the experiments is, however, not presented.}
+%
+%{It should be noted, though, that Imbert \cite{imbert93} states in his conclusion to have found the related heuristic returning $\argmin_{y\in Y}|\Pos_S(y)||\Neg_S(y)|$ to be inferior to ``any other choice, even at random''. The particular experiments, results and the specific problems considered for the experiments is, however, not presented.}
 %
 \subsection{Gauss-elimination}
 When our (in)equality system contains equalities, it is often an advantage to let them remain equalities instead of converting each one to two inequalities. Firstly, they are then easier to identify, and instead of doing FM-elimination on a variable in an equality, we can isolate it in the equality and substitute it in the other (in)equalities. By doing this, we avoid the increase in inequalities that an FM-elimination of the variable would otherwise (in most cases) cause. The downside is, that we make the system more dense, which FM-elimination, however, does as well. This is e.g. done in \cite{simon05}.
@@ -89,8 +91,8 @@ corresponds to scaling $c'$ and $c$ with $\frac{1}{|\coef(x,c')|}$ and $\frac{-\
 In our method, we will define auxiliary variables (that should not be eliminated) and we will therefore have a number of equalities which we will use to make Gauss-elimination. The pseudocode for this step is given in Algorithm~\ref{alg:Gauss}.
 %
 \begin{algorithm}
-\begin{algorithmic}\caption{Eliminating variables from an (in)equality system $S$ using Gauss-elimination.}
-\label{alg:Gauss}
+\caption{Eliminating variables from an (in)equality system $S$ using Gauss-elimination.}\label{alg:Gauss}
+\begin{algorithmic}[1]
 \Function{Gauss-Elim}{(In)equality system $S$, variables to be eliminated $Y\subseteq \VAR(S)$}
 \State $S'\gets S$
 \While{$Y\cap \var(\eqs(S')) \neq \emptyset$}
@@ -98,7 +100,7 @@ In our method, we will define auxiliary variables (that should not be eliminated
 	\State $S'\gets \Call{Gauss-ElimVar}{S', c, x}$
 \EndWhile
 \State\Return $S'$
-\State
+\Statex
 \Function{Gauss-ElimVar}{System $S$, equality $c$, variable $x\in \var(c)$}
 	\State $S'\gets \emptyset$
 	\State Remove $c$ from $S$
@@ -125,7 +127,7 @@ y = \smashoperator[r]{\argmin_{x\in \var(\eqs(S))}}|\set{c\in S}{x\in \var(c)}|\
 \] 
 
 \subsection{Preprocessing}
-The purpose of preprocessing is to simplify the (in)equality system that we are dealing with, i.a. to reduce it by removing redundant inequalities that are easily identifiable, updating bounds for variables and substituting variables with implied values \emph{such that} $\feas(S)$ does not change. {Likewise, preprocessing can be used to figure out at an early stage whether the problem is infeasible. However, we assume that the problem is feasible and do not spend time on checking this during the preprocessing step.}
+The purpose of preprocessing is to simplify the (in)equality system that we are dealing with, i.e. to reduce it by removing redundant inequalities that are easily identifiable, updating bounds for variables and substituting variables with implied values \emph{such that} $\feas(S)$ does not change. {Likewise, preprocessing can be used to figure out at an early stage whether the problem is infeasible. However, we assume that the problem is feasible and do not spend time on checking this during the preprocessing step.}
 
 Our preprocessing part consists of the following steps, described below: removing empty (in)equalities and unused variables, updating bounds for (in)\-equali\-ties with only one variable, substituting variables with fixed values, eliminating variables with only one sign occurring, updating bounds due to extreme values, removing linearly dependent (in)equalities \cite{lassez93}, and removing less strict (in)equalities. The basic preprocessing steps can be found in e.g. \cite{brearley75}, \cite{andersen95} and \cite{maros}.
 
@@ -143,7 +145,7 @@ If $c$ is an equality, both bounds are updated.
 %
 \subsubsection{Substituting variables with fixed value}\label{para:fixed} If $\UB(x) = \lb(x)$ for a variable $x\in X$, then we substitute $x$ with the given value in all (in)equalities in $S$. 
 
-If the variable $x$ is not in $Y$, meaning that we have not specified that it should be removed, then we do maintain the bounds of $x$ in the system.
+If the variable $x$ is not in $Y$, meaning that we have not specified that it should be removed, then we do maintain the bounds of $x$ in the system, i.e. we substitute $x$ in all (in)equalities in $S$ except for $\lbc(x)$ and $\UBc(x)$. The main reason for keeping such inequalities is that due to our decomposition of the system (see Section~\ref{sec:decomp} later) the system might later be joined with another system where $x$ is present and hence $x$'s value should not ``disappear''. 
 %\red{If $\lb(x)>\UB(x)$ then $S$ is unsatisfiable/infeasible.}
 %
 \subsubsection{Eliminating variables with only one sign occurring}\label{para:oneSign} If a variable $x$ only occurs with a non-negative coefficient in $S$ (excluding bounds) and does not occur in equalities, then we can substitute it with its lower bound if one exists; this actually corresponds to doing FM-elimination on $x$ where $\Neg_S(x)$ equals $\{\lbc(x)\}$. Notice that unlike the other described steps, this step changes the feasible area of $S$, though, this change is part of the overall goal of the whole procedure. 
@@ -155,7 +157,7 @@ P=\set {x\in \VAR(S)\setminus \var(\eqs(S))}{\forall c\in S\setminus\{\lbc(x)\}\
 we substitute $x$ with $\lb(x)$ in all (in)equalities in $S$. If $x\in Y\cap P$ and $x$ has no lower bound, we can just remove all inequalities $c$ for which $x\in \var(c)$, since this also corresponds to doing an FM-elimination of $x$. 
 Notice, that we again only do this for variables that we have confirmed should be eliminated. %\red{but can't we also do it otherwise and just maintain bounds?}
 	
-Similarly, we also substitute  variables in 
+Likewise, if $x$ has only non-positive coefficients in $S$, we can substitute is with its upper bound. That is, we substitute variables in 
 \[
 N=\set {x\in \VAR(S)\setminus\var(\eqs(S))}{\forall c\in S\setminus\{\UBc(x)\}\ . \ \coef(x,c)\leq 0}
 \] 
@@ -190,9 +192,10 @@ That is, if $\coef(x,c)>0$ then $x\leq \frac{\rhs(c)-\mathit{low}_x(c)}{\coef(x,
 This step is performed as in Algorithm~\ref{alg:bounds}. 
 We say that $x\in\var(c)$ has an appropriate high bound, if $\UB(x)$ exists when $\coef(x,c)>0$, and $\lb(x)$ exists when $\coef(x,c)<0$. Likewise, $x\in\var(c)$ has an appropriate low bounds if $\lb(x)$ exists when $\coef(x,c)>0$, and $\UB(x)$ exists when $\coef(x,c)<0$.
 
-\begin{algorithm}\caption{Removing (in)equalities that are implied due to the bounds of its variables, and updating bounds of variables implied by the right-hand-side of the (in)equality (and the bound of the other variables).}
+\begin{algorithm}
+\caption{Removing (in)equalities that are implied due to the bounds of its variables, and updating bounds of variables implied by the right-hand-side of the (in)equality (and the bound of the other variables).}
 \label{alg:bounds} 
-\begin{algorithmic}
+\begin{algorithmic}[1]
 \Function{ForcedByBounds}{(In)equality system $S$}
 \State $S'\gets S$
 \For{$c \in S'$}
@@ -214,7 +217,7 @@ We say that $x\in\var(c)$ has an appropriate high bound, if $\UB(x)$ exists when
 \EndFor
 \State\Return $S'$
 \EndFunction
-\State
+\Statex
 \Function{RedundantDueToBounds?}{$S$, $c\in S$}
 	\State $red \gets  \false$, $Subst \gets \emptyset$
 	\State $high\gets \infty$, $low\gets -\infty$ 
@@ -241,7 +244,7 @@ We say that $x\in\var(c)$ has an appropriate high bound, if $\UB(x)$ exists when
 	\EndIf
 	\State\Return $(red, Subst)$
 \EndFunction
-\State
+\Statex
 \Function{ImpliedBounds}{$S$, $c \in S$}
 	\State $\mi{UBs}\gets \emptyset$, $\mi{lbs}\gets\emptyset$
 	\For{ $x \in \var(c)$ }
@@ -353,7 +356,7 @@ We implement the removal of less strict inequalities in a similar way to how the
 The overall preprocessing step then consists of doing all the above mentioned steps repeatedly in a cycle, as long as ``something happens'' in a cycle, that is, an (in)equality or variable has been removed or substituted with a value, or a bound has been updated.
 %\marginpar{I could implement it as in \cite{andersen95}}
 \begin{algorithm}\caption{Preprocessing an (in)equality system $S$. The variables in $\VAR(S)\setminus Y$ should be kept.}\label{alg:prep}
-\begin{algorithmic}
+\begin{algorithmic}[1]
 \Function{Preprocess}{(In)equality system $S$, variables $Y\subseteq \VAR(S)$}
 \State $S'\gets S$
 \Do
@@ -372,7 +375,6 @@ The overall preprocessing step then consists of doing all the above mentioned st
 \end{algorithmic}
 \end{algorithm}
 %
-%Nævn navne på disse functioner i hvert afsnit.
 \subsection{Removing redundancy}
 As previously described, at each step of the FM-elimination, the number of (in)equalities will grow with $|\Pos_S(x)|\cdot|\Neg_S(x)| - |\Pos_S(x)| -|\Neg_S(x)|$ inequalities. 
 Unless either $\Pos_S(x)$ or $\Neg_S(x)$ equals one, or both numbers equal two, this will account for an increase in the number of inequalities. For a large, dense system, the growth will be substantial, which prohibits it from use for practical purposes \emph{if} the added inequalities are non-redundant ({See e.g. \cite{lassez93} and \cite{lukatskii08}}). However, many of the added inequalities are potentially redundant, and it would greatly improve the applicability of the procedure if the addition of (too many) redundant inequalities can be (efficiently) avoided, or the redundant inequalities can be removed (efficiently) after they have been added, or both.
@@ -382,12 +384,12 @@ Theoretically, all redundant inequalities can be removed from an (in)equality sy
 We notice that if $c$ is a non-redundant inequality in $S$ that lies in $\mathit{Zero}_S(x)$ for some variable $x$, then $c_{\VAR(S)\setminus\{x\}}$ is also a non-redundant inequality in $S'$ for all $S'\in\prs_{\{x\}}(S)$.  Therefore, assuming that we have already removed redundant inequalities from the system $S$, it is therefore only necessary to check all the new inequalities being added to the system after each FM-elimination.
 
 \begin{algorithm}
+\caption{Removing redundant inequalities from an (in)equality system $S$. The maximum value in line~\ref{line:maxx} can be calculated with an lp-solver}\label{alg:RedRem}
 \begin{algorithmic}[1]
-\caption{Removing redundant inequalities from an (in)equality system $S$. The maximum value in line~4 can be calculated with optimization software; we have used IBM's CPLEX}\label{alg:RedRem}
 \Function{RemoveRedundantIneqs}{(In)equality system $S$, Inequalities to be checked $C\subseteq S\setminus\eqs(S)$}
 	\State $S'\gets S$
 	\ForAll{$c\in C$}
-		\If{$\max\set{\vea(c)\cdot\ve{r}}{\ve{r}\in \feas(S'\setminus\{c\})}\leq \rhs(c)$} %%Can't make label work correctly
+		\If{$\max\set{\vea(c)\cdot\ve{r}}{\ve{r}\in \feas(S'\setminus\{c\})}\leq \rhs(c)$}\label{line:maxx} %%Can't make label work correctly
 			\State Remove $c$ from $S'$
 		\EndIf
 	\EndFor

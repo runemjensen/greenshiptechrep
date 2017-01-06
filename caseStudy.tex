@@ -377,3 +377,29 @@ To give the reader an idea of the how the number of (in)equalities and variables
 This is followed by repeated steps of FM-elimination (the ``peaks'' in the number of (in)equalities), clean-up (the ``flat'' part after the peaks) and redundancy removal (the ``valleys'').
 
 We note that $S_3$ is the most time-consuming system to project of the three, and the final system as shown in Figure~\ref{fig:FinalProjectionS3} is by far the system (of all the subsystems that are projected) that produced the biggest intermediary systems.  
+
+\subsection{Implementation notes}
+{In our implementation of the program we use rationals for the coefficients and right-hand-sides}.
+
+$\epsilon$ in Section~\ref{sec:uncertainty} is set to $0.01$, $\epsilon' = 0.000001$, and $\mathcal{K} = 10^{14}$.
+
+{It should be noted, that because we use the almost redundant criteria when doing (sequential) redundancy, the system $S'$ returned by \Call{RemoveRedundancy}{} in line~\ref{ln:projx} of Algorithm~\ref{alg:project} is no longer completely identical to $\proj_x(S)$; $S'$ will most likely be an overapproximation of the projection. However, as previously mentioned, the parameters of a problem -- and this indeed holds for the particular problem we have considered -- are not necessarily very accurate, and small discrepancies between the returned projection and the actual projection is acceptable. It still remains to be shown that the overapproximation is not ``too big'' according to a given criterion.}
+\\
+\\
+The program was implemented in Java.
+
+In the implementation, we have used a list, not a set, for representing the (in)equalities in a system. Thus, at a given point, the (in)equality system $S$ might contain two (in)equalities $c$ and $c'$ for which $\vea(c)=\vea(c')$. However, either $c$ or $c'$ will be removed in the preprocessing/clean up step (when removing linearly dependent (in)equalities), and this does not influence the correctness of the algorithm(s).
+
+We also normalize the (in)equalities in the inequality system such that the smallest absolute value of the coefficients is $1$. This also makes it easier to detect linear dependencies. 
+\\
+\\
+We want to point out here, that the implemented program is non-deterministic due to a number of factors. 
+
+Firstly, the almost redundant-criteria for removing inequalities in the sequential redundancy removal means that the order in which the inequalities are checked, matters. 
+For two runs (on the same input system) to result in the exact  same projection, the variables must be projected in the same order, and at each variable elimination, the produced inequalities must be added in the same order (or checked for redundancy in the same order), and the redundancy check using CPLEX must result in the same yes/no answer (and $\kappa$-value). %This is in principle possible to achieve by having fixed orders of variables e.t.c. and setting some properties for CPLEX}.
+ 
+Making use of parallel redundancy check means that when an inequality from a system is checked for redundancy in two different runs, another inequality might have been deemed redundant by another checker and hence have been removed in one run, while it is not in the other run (because the checker finished later). This can influence how long the check of the current inequality takes and influence the $\kappa$-value, so this effect can propagate. In the end, this might cause the set of removed (in)equalities to vary in the two runs altogether (because some inequalities in reality are redundant but cannot be determined to be so). 
+
+Likewise, we make use of an in-build mechanism in Java for parallelism, namely streams. These are used for example when using the heuristic for finding out which variable should be removed. Again, this can of course be avoided.
+
+In conclusion, with careful ordering of variables e.t.c., settings of parameters for CPLEX and avoidance of parallelism, non-determinism could possibly be avoided, but will most likely also be less efficient.  

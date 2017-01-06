@@ -1,22 +1,24 @@
 
 \section{Introduction}
 
-Fourier-Motzkin-Elimination (FME) is an central theoretical approach to determine feasibility of Linear Programs (LPs), but it is seldom used in practice due to its high computational complexity.
+Fourier-Motzkin-Elimination (FME) is a central theoretical approach to determine feasibility of linear programs (LPs), but it is seldom used in practice due to its high computational complexity.
+%
+It is an algorithm that projects the polyhedron of feasible solutions of the LP one dimension at a time, such that the feasible values and inter-dependencies of the remaining variables in the resulting polyhedron are unaltered. In this way, FME computes an abstraction of the original LP corresponding to existential quantification in logic, \red{where the value of the eliminated variable no longer is represented.}
 
-FME is a projection method that removes a variable from the polyhedron of feasible solutions of the LP such that the feasible solutions and inter-dependencies of the remaining variables in the resulting polyhedron are unaltered. In this way, FME computes an abstraction of the original LP corresponding to existential quantification in logic, where the value of the eliminated variable no longer is represented.
+Projection is a fundamental operation that has been successfully applied in practice, in particular in static analysis of programs and logic programming,
+%, and constraint logic programming (e.g., \cite{fouilhe,benoy05,simon10,jaffar93}), 
+(see e.g. \cite{benoy05} for applications and references). Here polyhedra represent 
+numerical variable domains \cite{cousot78}, and variables out of scope and other auxiliary variables are eliminated via projection. Likewise, projection is used in constraint query languages \cite{lassez90}, and other potential applications of FME include %constraint query languages \cite{lassez90}, 
+coordination and/or negotiation situations as suggested in \cite{lukatskii08}, and as an alternative solution method for parametric linear programming \cite{jones08}.
 
-Since this is a fundamental operation, FME has been used for this purpose in practice. 
-In particular, FME has been successfully applied in static analysis of programs, logic programming, and constraint logic programming (e.g., \cite{fouilhe,cousot78,benoy05,simon10,jaffar93}), where polyhedra represent 
-numerical variable domains and FME eliminates auxiliary variables and variables out of scope. Other examples include abstraction of biophysics models and models of negotiation situations \cite{lukatskii08}.
+We are not aware of any previous work, however, that applies FME for massive variable elimination, where say 99\% of the variables are eliminated with the purpose to simplify the LP by removing most of its variables.This is, however, a relevant task. Consider for instance an economic model that achieves high accuracy through a large number of economic parameters at county level, but primarily is used to analyse these parameters at an aggregated national level. In this case, only a small fraction of the variables are of interest and the LP may be simplified by abstracting away (i.e., eliminating) the other low-level variables.
 
-We are not aware of any previous work, however, that applies FME for massive variable elimination, where say 99\% of the variables are eliminated with the purpose to simplify the LP by removing most of its variables. Consider for instance an economic model that achieves high accuracy through a large number of economic parameters at county level, but primarily is used to analyse these parameters at an aggregated national level. In this case, only a small fraction of the variables are of interest and the LP may be simplified by eliminating the other variables.
+In this report, we consider a similar problem. In liner shipping, it is challenging to evaluate how the cargo capacity of a container vessel depends on the {\em cargomix}, i.e., the mixture of containers with different attributes that the vessel carries. The reason for this is that containers only can be stowed certain ways (e.g., $40'$ containers cannot be stowed on top of $20'$ containers and refrigerated containers must be stowed in slots with power plugs) while at the same time the vessel must fulfill seaworthiness requirements such as stability rules and stress force limits. The liner shipping companies need accurate capacity models to optimize decisions about cargo flow and uptake management on services, but today they rely on static capacity measures (e.g., \cite{ting04,feng08,zurheide13}) that are too inaccurate for practical usage \cite{AlbertosThesis}.
 
-In this report, we consider a similar problem. In liner shipping, it is challenging to define the cargo capacity of a container vessel as a function of the mixture and container types and weight classes (i.e., the {\em cargomix}) it carries. The reason is that containers only can be stowed certain ways (e.g., 40' containers cannot be stowed on top of 20' containers and refrigerated containers must be stowed in slots with power plugs) and the vessel must fulfil seaworthiness requirements such as stability rules and stress force limits. The liner shipping companies need accurate capacity models to optimize decisions about uptake management on services and cargo flow, but today rely on static capacity measures (e.g., \cite{ting04,feng08,zurheide13}) that are too inaccurate  for practical usage \cite{AlbertosThesis}.
+On the other hand, accurate LP models for optimization of vessel stowage planning have been developed (e.g., {\cite{pacino11,pacino12,AlbertosThesis}}). These models represent a feasible stowage plan as the number of containers of different type and weight class that the vessel can carry in each of its $100$ or more storage areas. A capacity model is simply an abstraction of these stowage models, where the physical position of cargo is abstracted away. Since there are in the order of $100$ storage areas on the vessel, this corresponds to eliminating $99\%$ of the variables. 
 
-On the other hand, accurate LP models for stowage planning optimization have been developed (e.g., {\cite{pacino11,pacino12,AlbertosThesis}}). These models represent the feasible set of stowage plans of a vessel as the number of containers of different type and weight class the vessel can carry in each of its 100 or more storage areas. A capacity model is simply an abstraction of these stowage models, where the physical position of cargo is abstracted away. Since there are in the order of 100 storage areas on the vessel, this corresponds to eliminating 99\% of the variables. 
-
-In this report, we introduce a novel hierarchically decomposed and parallelized FME algorithm for massive variable elimination. Similar to the FME frameworks used in static program analysis and logic programming (e.g., \cite{simon05,lukatskii08,shapot12}), it applies Gauss\--eli\-mi\-na\-tion (equality removal), removal of syntactic and quasi-syntactic redundancies, complete removal of redundant inequalities between each variable elimination together with an approximation of the boundaries of the projection. In addition, it contributes pre-processing and removal of less strict inequalities. 
-Our main contribution, however, is a hierarchical decomposition of the problem using auxiliary variables based on the block structure that often is observed in LPs \cite{williams} as well as a sound concurrent implementation of the redundancy removal. 
+In this report, we introduce a novel hierarchically decomposed and parallelized FME algorithm for massive variable elimination. Similar to other recent FME frameworks (e.g., \cite{simon05,lukatskii08,shapot12}), our method applies Gauss\--eli\-mi\-na\-tion (equality removal), removal of syntactic and quasi-syntactic redundancies, complete removal of redundancy in between variable eliminations, together with an approximation of the projection when needed. In addition, our framework includes preprocessing including removal of less strict inequalities. 
+Our main contribution, however, is a hierarchical decomposition of the problem using auxiliary variables based on the block structure that often is observed in LPs \cite{williams} as well as a sound, concurrent implementation of the redundancy removal. 
 
 Theoretically, the number of inequalities may grow double exponentially with the number of eliminated variables. Our experiments on deriving capacity models from stowage models of mega vessels, however, show only a modest growth in the number of inequalities  when complete removal of redundant inequalities between each variable elimination is carried out (e.g., see Figures~\ref{fig:FinalProjectionS1}-\ref{fig:FinalProjectionS3} in Chapter~\ref{sec:results}). As expected, the number of inequalities decrease in the end where most variables are removed. The resulting capacity models are small and useful in practice (e.g., see Table~\ref{tab:results} in Chapter~\ref{sec:results}). 
 
@@ -25,19 +27,7 @@ It is possible that the limited growth in non-redundant inequalities is unique f
 \\
 The remainder of this report is organized as follows.
 In Chapter~\ref{sec:def}, we present the definitions and notation relating to inequality systems and projections that are used in this report. 
-Then we proceed in Chapter~\ref{sec:basic} by describing the basic algorithms used for achieving the projection, namely the classical Fourier-Motzkin elimination, Gauss-elimination, and some basic methods for preprocessing and removing redundant information (inequalities). 
-In Chapter~\ref{sec:improvements} we then describe the alterations and improvements made to these algorithms. Specifically we detail an altered and parallellized method for removing redundant inequalities, as well as how our system (as well as other block structured systems) can be decomposed to achieve a more efficient projection.    
-Chapter~\ref{sec:implementation} then gives an overview on how the different parts described so far are tied together to achieve the wanted goal, and a few details regarding the implementation of the procedure are given as well.
-Subsequently, Chapter~\ref{sec:results} gives a short presentation of the considered stowage model(s) after which the results of projecting these are presented. 
+Chapter~\ref{sec:basic} outlines the basic algorithms used for achieving the projection, namely the classical Fourier-Motzkin elimination, Gauss-elimination, and some basic methods for preprocessing and removing redundant information (inequalities). 
+In Chapter~\ref{sec:improvements} we then describe the alterations and improvements made to these algorithms. Specifically we detail an altered and parallellized method for removing redundancy, how we combine the mentioned steps into an algorithm for projection, and we present how our system (as well as other block structured systems) can be decomposed to achieve a more efficient projection.    
+Subsequently, Chapter~\ref{sec:results} gives a short presentation of the considered stowage model(s) after which the results of projecting these are presented along with a few details regarding the implementation. 
 Finally, we review and discuss related work in Chapter~\ref{sec:related} before Chapter~\ref{sec:conclusion} concludes.
-
-
-
-
-
-
-
-
-
-
-

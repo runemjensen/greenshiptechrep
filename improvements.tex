@@ -31,6 +31,7 @@ Finally we also reexamine inequalities, for which the lp-solver was not able to 
 The pseudocode for the redundancy checkers is listed in Algorithm~\ref{alg:checker}, and the pseudocode for the manager is listed in Algorithm~\ref{alg:manager}. 
 When the manager receives results from the checkers (via calls to \Call{ManageResult}{} in line~\ref{line:manageResult} in Algorithm~\ref{alg:manager}), it finishes handling one call before handling the next call. %For the parallel checkers, as explained it is important to only check for strict redundancy (well, it is important that only strictly redundant inequalities are removed since otherwise the result can be incorrect due to two parallel checkers removing/reporting each their ``almost redundant'' inequality redundant). When the inequalities are checked sequentially, we can also remove ``almost redundant'' inequalities.
 
+
 \begin{algorithm}[htbp]
 \caption{Initializing and running a redundancy checker. A checker can either check for true redundancy (used when doing concurrent redundancy checks) or not, in which case it checks for ``almost redundancy'' (for doing sequential redundancy checks).}\label{alg:checker}
 \begin{algorithmic}[1]
@@ -347,6 +348,7 @@ This follows from Lemma~\ref{lm:separating} below since by construction $\VAR(S)
 See Appendix
 \end{proof}
 
+
 \subsubsection{Splitting transverse constraints}
 Separating the system as described above helps preventing the (in)equalities becoming too dense when eliminating variables from the local parts. However, we also need to eliminate the defined variables in $Z^0$, which there might be many of. Using auxiliary variables in a way similar to the one described above, we would therefore like to split the variables in $Z^0$ into groups and use auxiliary variables to prevent subsystems ``mixing'' with each other. Potentially, projecting the subsystems will again result in manageable systems that can then be put together.
 
@@ -520,11 +522,13 @@ See Appendix.
 %
 \noindent To obtain a system from $\prs_Y(S)$, we can therefore instead eliminate all $Y$ and $Z$ variables from the final system. Although this seems more troublesome, we can use the constructed tree structure to project the (in)equality system, such that a subsystem $S^l_i$ is projected by first projecting each of its subtree's systems ($\mathfrak{S}^{l-1}_j$ for $j\in P^l_i$) recursively, add these projections to $S^l_i$ and then finally project the result w.r.t. $(Y\cup Z^{l-1})\cap S^l_i$. See Figure~\ref{fig:recursiveProjectionEs}.
 
+
+
 For each $0\leq l\leq K$ and $1\leq i \leq k^l$, we let $\mathfrak{E}^l_i$ be one of the systems in the (recursive) projection of $S^l_i$ and its subsystems (see Figure~\ref{fig:recursiveProjectionEs}). 
 
 \begin{figure}
 	\centering
-		\includegraphics{//fs4.itu.local/redirection/ajspur/Pictures/recursiveProjectionEs.pdf}
+		\includegraphics{figures/recursiveProjectionEs.pdf}
 	\caption{Using the tree structure from Figure~\ref{fig:treeStructureSs} for an (in)equality system $S$ to recursively project the variables $Y\subseteq \VAR(S)$.}
 	\label{fig:recursiveProjectionEs}
 \end{figure}

@@ -381,7 +381,7 @@ We note that $S_3$ is the most time-consuming system to project of the three, an
 \subsection{Implementation notes}
 {In our implementation of the program we use rationals for the coefficients and right-hand-sides}.
 
-$\epsilon$ in Section~\ref{sec:uncertainty} is set to $0.01$, $\epsilon' = 0.000001$, and $\mathcal{K} = 10^{14}$.
+$\epsilon$ in Section~\ref{sec:uncertainty} is set to $0.01$, $\epsilon' = 0.000001$, and $\mathcal{K} = 10^{14}$. The optimization software CPLEX from IBM was used as lp-solver. 
 
 {It should be noted, that because we use the almost redundant criteria when doing (sequential) redundancy, the system $S'$ returned by \Call{RemoveRedundancy}{} in line~\ref{ln:projx} of Algorithm~\ref{alg:project} is no longer completely identical to $\proj_x(S)$; $S'$ will most likely be an overapproximation of the projection. However, as previously mentioned, the parameters of a problem -- and this indeed holds for the particular problem we have considered -- are not necessarily very accurate, and small discrepancies between the returned projection and the actual projection is acceptable. It still remains to be shown that the overapproximation is not ``too big'' according to a given criterion.}
 \\

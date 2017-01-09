@@ -1,6 +1,5 @@
 \section{Definitions and notation}\label{sec:def}
 In this report we consider a finite set of variables $\xx$ plus the set $\ie$ consisting of all inequalities and equalities over any subset of $\xx$. An element $c\in\ie$ is thus an equality or inequality over a subset $\VAR(c)\subseteq\xx$ and is referred to as an (in)equality over $\VAR(c)$. 
-%\marginpar{argh, by my definition I cannot have two of the ``same'' inequality in an (in)equality system - maybe make it multisets?}
 It can be written as
 \begin{equation}\label{eq:ineq}
 c: \sum_{x\in \VAR(c)}\coef(x,c)\cdot x\odot_c \rhs(c),
@@ -24,7 +23,6 @@ The set of points in $\mathbb{R}^{|\VAR(c)|}$ that satisfies the (in)equality $c
 Since the feasible region of an (in)equality is just a set of points in a (multi-dimensional) Euclidian space, here the order of the variables, $\prec$, is important and needs to be explicitly or implicitly given or assumed.
 \\\\
 In the following, an (in)equality system is a set $S$ of (in)equalities over the same set of variables, $\VAR(S)$, i.e. $S\subset\ie$ and $\VAR(c)=\VAR(S)$ for all $c\in S$. Therefore, when we union, intersect or subtract two (in)equality systems $S_1, S_2\subset \ie$ to produce another (in)equality system $S'$, it is required that all (in)equalities in $S'$ are (in)equalities over the same set $X$. Hence we require that $\VAR(S_1) = \VAR(S_2)$ when we talk about the (in)equality systems $S_1\cup S_2$, $S_1\cap S_2$ or $S_1\setminus S_2$. However, it is always possible to extend the (in)equalities in $S_1$ and $S_2$ to a common variable-set, and if $\VAR(S_1)\neq \VAR(S_2)$ we therefore let $S_1\cup S_2\odef \set{c_X}{c\in S_1}\cup \set{c_X}{c\in S_2}$, where $X=\VAR(S_1)\cup\VAR(S_2)$, and similar for the other set-operations $\cap$ and $\setminus$. 
-%\marginpar{Alternatively, we could have that $S_1\sqcup S_2 \odef \set{c_{\VAR(S_1)\cup \VAR(S_2)}}{c\in S_1\cup S_2}$ etc.} \marginpar{Could have $\sqcup$ to make clear that its not just a set-operation on $\ie$} 
 
 We let $\eqs(S)$ denote the set of equalities in $S$, i.e. $\eqs(S) \odef \set{c \in S}{\odot_c \text{ is } =}$, we define the used variables in $S$ as
 $\var(S)\odef \cup_{c\in S}\var(c)$, and we let $S_X \odef \set{c_X}{c\in S}$ for any $X\subseteq \xx$.
@@ -32,8 +30,7 @@ The feasible region for $S$ is the set of points in $\mathbb{R}^{|\VAR(S)|}$ tha
 \[
 \feas(S) \odef \cap_{c\in S}\feas(c).
 \]
-It follows that if $S_1, S_2\subseteq S$, then $\feas(S_1\cup S_2) = %\cap_{c\in S_1\cup S_2}\feas(c) = \cap_{c\in S_1}\feas(c)\cap\cap_{c\in S_2}\feas(c) = 
-\feas(S_1)\cap \feas(S_2)$. 
+It follows that if $S_1, S_2\subseteq S$, then $\feas(S_1\cup S_2) = \feas(S_1)\cap \feas(S_2)$. 
 
 In linear programming, it is common to have bounds for some of the variables in an (in)equality system $S$. For our purpose, upper and lower bounds are modeled as inequalities as in \eqref{eq:constraintX} with $X=\VAR(S)$ and a coefficient of $\pm 1$. If they exist, the inequalities representing upper and lower bounds for $x$ are referred to as $\UBc(x)$ and $\lbc(x)$, respectively, while $\UB(x)\in \mathbb{R}$ and $\lb(x)\in\mathbb{R}$ denote the upper, respectively lower bound of the variable $x$. 
 That is, if the upper bound of $x$ exists, then $\UBc(x)$ refers to the inequality $x\leq \UB(x)$ in $S$, and if the lower bound of $x$ exists, then $\lbc(x)$ refers to the inequality $-x \leq -\lb(x)$ in $S$.
@@ -52,8 +49,6 @@ are redundant.
 If the (in)equality $c$ is \emph{not} redundant, it is called \emph{non-redundant}.
 %
 \\\\
-%\red{Is not needed, I guess: The feasible region of an (in)equality $c\in\ie$ defines one (if $c$ is an inequality) or two (if $c$ is an equality) halfspaces in $\mathbb{R}^{|\VAR(c)|}$, and therefore $\feas(S)$ is a polyhedron in $\mathbb{R}^{|\VAR(S)|}$.} 
-%
 As described, the feasible region of $S$ describes the combination of values for the variables in $\VAR(S)$ that satisfy all the (in)equalities in $S$. However, for the sake of abstraction there are some variables $Y\subseteq \VAR(S)$ whose value we are not interested in, we just want to know that a satisfying value for these variables exists.  
 Therefore, we want to find a set of values $P$ for the variables of interest ($\VAR(S)\setminus Y$), such that when we have a set of values in $P$ then we can extend it with values for the variables in $Y$ in such a way that the collective set of values satisfy all (in)equalities in $S$. 
 The {projection} of the feasible region of $S$ gives us the largest set of values with this property.

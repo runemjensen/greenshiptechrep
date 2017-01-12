@@ -246,7 +246,7 @@ We have tested our methods on three different models, each including a different
 
 We have used data from our industrial partner, Maersk, from a vessel with a capacity of $15.500$ TEU, $91$ locations, $27$ ballast tanks and $33$ stations. There are $25$ frame points, however, we have only used one fore and one aft (in the two models considering hydrostatics). In all models, we considered 12 types, $T = \{20', 40'\}\times \{6t, 21t, 27t\}\times\{\trt{R}, \trt{NR}\}$, that are defined according to the length, the weight class and the reefer property of the containers.
 
-In the two tables below we show which (in)equalities are present in the 3 (in)equality systems $S_1$, $S_2$ and $S_3$ that have been tested, and we state the size of each model given in number of (in)equalities, number of variables and the two numbers multiplied. Similarly we present the size of the projected (in)equality systems together with the approximate time taken to obtain those projections. 
+In the two tables below (Table~\ref{fig:constraints} and Table~\ref{tab:results}) we show which (in)equalities are present in the 3 (in)equality systems $S_1$, $S_2$ and $S_3$ that have been tested, and we state the size of each model given in number of (in)equalities, number of variables and the two numbers multiplied. Similarly we present the size of the projected (in)equality systems together with the approximate time taken to obtain those projections. 
 
 The (in)equality system $S_1$ includes $3$ capacity constraints per location and shear force calculations at $2$ frame points; $S_2$ includes all capacity constraints for each location but no calculations of shear forces. $S_3$ includes 6 capacity constraints per location and shear force calculations at the two frames.
 
@@ -266,7 +266,7 @@ $S_3$& \eqref{20Cap}, \eqref{40Cap}, \eqref{teuCap}, \eqref{combinedWeightCap}, 
 \caption{Constraints included in test systems.}\label{fig:constraints}
 \end{table}
 
-The tests have been done on a laptop with an Intel$^\text{\textregistered}$ Core\texttrademark\; i7-4600U-processor with a frequency of 2.10-3.3 GHz, 8GB RAM, and with $2$ cores and $4$ threads. The computer has also been used to perform other tasks while doing the projection, and $3$ threads were used to run the parallel redundancy checks. The time used to make the projection is therefore not accurate, but still gives an indication of the running time (especially when these are compared across the test results). 
+The tests have been done on a laptop with an Intel$^\text{\textregistered}$ Core\texttrademark\; i7-4600U-processor with a frequency of 2.10-3.3 GHz, 8GB RAM, and with $2$ cores and $4$ threads. The computer has also been used to perform other tasks while doing the projection, and $3$ threads were used to run the parallel redundancy checks. The time used to make the projection is therefore not accurate, but still gives an indication of the running time (especially when these are compared across the test results).
 
 \begin{table}[H]
 \centering
@@ -276,13 +276,15 @@ The tests have been done on a laptop with an Intel$^\text{\textregistered}$ Core
 system&&{\#(in)eqs}&{\#vars}&${\#\text{ineqs}\cdot\#\text{vars}}$&{\#(in)eqs}&{\#vars}&${\#\text{ineqs}\cdot\#\text{vars}}$\\
 %\scriptsize{\#vars}&$\substack{\#\text{ineqs}\quad\\\cdot\#\text{vars}}$\\
 \hline
-$S_1$&6 m&537&1092&586,404&26&12&312\\
+$S_1$&8 m&537&1092&586,404&26&12&312\\
 $S_2$&18.5 h&922&1209&1,114,698&42&12&504\\
-$S_3$&97 h&811&1171&949,681&106&12&1272\\
+$S_3$&92 h&811&1171&949,681&106&12&1272\\
 \hline
 \end{tabular}
 \caption{Sizes of original and projected systems.}\label{tab:results}
 \end{table}
+
+For comparison, the system $S_1$ was attempted projected without decomposition, but otherwise with the same settings. After approximately $6.5$ hours the system ran out of memory with $638$ variables left to project.
 
 In all three test cases, the system consisting of the (in)equalities using $x_{l,\tau}$ and $\weight_l$ were set aside; this is the system corresponding to the constraints \eqref{20Cap}-\eqref{xPos} (for $S_2$) plus \eqref{shearLocDef} (for $S_1$ and $S_3$). Then these systems were decomposed according to the locations, and the variables $x_{l,\tau}$ and $\weight_l$ were eliminated, leaving a system over $x_\tau$ (for $S_1$), or $x_\tau$ and $\shear^{\trt{c},e}_f$ (for $S_1$ and $S_3$). The decomposition was done such that $X_i = \set{x_{l,\tau}}{\tau \in T, l\in P^0_i}\cup\set{\weight_l}{l\in P^0_i}$ for each $1\leq i \leq 45$, where  
 \begin{align*}

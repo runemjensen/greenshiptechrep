@@ -1,6 +1,6 @@
 \section{Related work and Discussion}\label{sec:related}
 \paragraph{Original method and additions}
-The presented, basic method for eliminating variables from a system of linear inequalities was first provided by Fourier in 1824 \cite{fourier2}, %\cite{fourier1}}, 
+The presented, basic method for eliminating variables from a system of linear inequalities was provided by Fourier in the 1820s \cite{fourier1}, %\cite{fourier1}}, 
 while Motzkin later reintroduced the method in his Ph.D. thesis \cite{motzkin}. \v{C}ernikov later augmented Fourier's algorithm with computational simple rules, which were later rediscovered by Kohler \cite{kohler67}, to both prevent additions of (some) redundant inequalities and remove others after construction \cite{chernikov63}, and used together with these rules, the presented method is also referred to as the Fourier-\v{C}ernikov method. 
 These criteria-based rules rely on keeping track of an index set for each inequality $c\in S$, which contains (the index of) the inequalities from the original system that during the procedure have been combined to obtain $c$.   
 However, though the proposed rules improve the method, they are incomplete,  i.e. they do not detect or remove all redundancies {(see e.g. \cite{imbert93} or \cite{lukatskii08}).
